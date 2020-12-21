@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>docker on Sonata for solo Violin</title>
-    <link>https://violinsonata.site/tags/docker/</link>
+    <link>/violinsonata.site/tags/docker/</link>
     <description>Recent content in docker on Sonata for solo Violin</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Wed, 08 Apr 2020 14:41:12 +0800</lastBuildDate>
     
-	<atom:link href="https://violinsonata.site/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/violinsonata.site/tags/docker/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Docker容器中访问宿主机网络</title>
-      <link>https://violinsonata.site/2020/access-host-network-in-docker/</link>
+      <link>/violinsonata.site/2020/access-host-network-in-docker/</link>
       <pubDate>Wed, 08 Apr 2020 14:41:12 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2020/access-host-network-in-docker/</guid>
+      <guid>/violinsonata.site/2020/access-host-network-in-docker/</guid>
       <description>Docker容器监听宿主机端口 使用端口映射 现在假设有一个Docker容器nginx， 它运行时将监听docker内的80端口， 此时宿主机的80</description>
     </item>
     

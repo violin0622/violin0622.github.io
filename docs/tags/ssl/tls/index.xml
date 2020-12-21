@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>SSL/TLS on Sonata for solo Violin</title>
-    <link>https://violinsonata.site/tags/ssl/tls/</link>
+    <link>/violinsonata.site/tags/ssl/tls/</link>
     <description>Recent content in SSL/TLS on Sonata for solo Violin</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Thu, 13 Aug 2020 15:26:47 +0800</lastBuildDate>
     
-	<atom:link href="https://violinsonata.site/tags/ssl/tls/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/violinsonata.site/tags/ssl/tls/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>SSL/TLS的工作原理</title>
-      <link>https://violinsonata.site/2020/detail-of-ssl-and-tls/</link>
+      <link>/violinsonata.site/2020/detail-of-ssl-and-tls/</link>
       <pubDate>Thu, 13 Aug 2020 15:26:47 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2020/detail-of-ssl-and-tls/</guid>
+      <guid>/violinsonata.site/2020/detail-of-ssl-and-tls/</guid>
       <description>网络通信过程中可能遇到的风险与应对 网络通信过程中的数据安全将要面临三个风险: 1. 窃听风险(eavesdropping) 2. 篡改风险(tamper</description>
     </item>
     
