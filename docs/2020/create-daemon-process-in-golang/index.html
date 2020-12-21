@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="Violin">
+  <meta name="description" content="violin sonata">
+  <meta name="keywords" content="[Hugo blog]">
+  
+  <link rel="prev" href="https://violinSonata.site/2020/basic-concepts-of-network-security/" />
+  <link rel="next" href="https://violinSonata.site/2020/detail-of-ssl-and-tls/" />
+  <link rel="canonical" href="https://violinSonata.site/2020/create-daemon-process-in-golang/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           使用Golang创建守护进程 | Sonata for solo Violin
+       
+  </title>
+  <meta name="title" content="使用Golang创建守护进程 | Sonata for solo Violin">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/violinSonata.site\/"
+    },
+    "articleSection" : "post",
+    "name" : "使用Golang创建守护进程",
+    "headline" : "使用Golang创建守护进程",
+    "description" : "package main import ( \x26quot;os\x26quot; \x26quot;fmt\x26quot; \x26quot;os\/signal\x26quot; \x26quot;syscall\x26quot; \x26quot;time\x26quot; \x26quot;log\x26quot; \x26quot;os\/exec\x26quot; ) func init() { \/\/ 如果本进程的父进程不是init进程, 则 \/\/ 创建与本进程相同的子进程, 然后退出, 使 \/\/ 子进程被init进程接管, 从",
+    "inLanguage" : "en",
+    "author" : "Violin",
+    "creator" : "Violin",
+    "publisher": "Violin",
+    "accountablePerson" : "Violin",
+    "copyrightHolder" : "Violin",
+    "copyrightYear" : "2020",
+    "datePublished": "2020-08-13 15:07:00 \x2b0800 CST",
+    "dateModified" : "2020-08-13 15:07:00 \x2b0800 CST",
+    "url" : "https:\/\/violinSonata.site\/2020\/create-daemon-process-in-golang\/",
+    "wordCount" : "149",
+    "keywords" : [ "Golang", "Sonata for solo Violin"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">使用Golang创建守护进程</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://violinSonata.site/" rel="author">Violin</a> 
+                <span class="post-time">
+                on <time datetime=2020-08-13 itemprop="datePublished">2020-08-13</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://violinSonata.site/categories/%E7%BC%96%E7%A8%8B/"> 编程 </a>
+                        
+                </span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          <pre><code class="language-golang">package main
+ 
+import (
+    &quot;os&quot;
+    &quot;fmt&quot;
+    &quot;os/signal&quot;
+    &quot;syscall&quot;
+    &quot;time&quot;
+    &quot;log&quot;
+    &quot;os/exec&quot;
+)
+func init() {
+    // 如果本进程的父进程不是init进程, 则
+    // 创建与本进程相同的子进程, 然后退出, 使
+    // 子进程被init进程接管, 从而创建了守护进程. 
+    if os.Getppid() != 1{
+        cmd := exec.Command(os.Args[0], os.Args[1:]...)
+        cmd.Start()
+        os.Exit(0)
+    }
+ 
+    // 监听系统信号
+    go func() {
+        _c := make(chan os.Signal, 1)
+        signal.Notify(_c, 
+            os.Interrupt, 
+            syscall.SIGHUP, 
+            syscall.SIGINT, 
+            syscall.SIGTERM, 
+            syscall.SIGQUIT, 
+            syscall.SIGKILL, 
+            syscall.SIGTSTP
+        )
+        msg := &lt;- _c
+        log.Println(msg)
+        os.Exit(0)
+    }()
+}
+ 
+func main()  {
+ 
+    go func(){
+        fp, _ := os.OpenFile(&quot;log&quot;, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+        log.SetOutput(fp)
+        for{
+            log.Println(fmt.Sprint(&quot;hello &quot;, os.Getpid()))
+            time.Sleep(time.Second * 5)
+        }
+    }()
+    
+    for{
+        time.Sleep(time.Second * 1000)
+    }
+}
+</code></pre>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>Violin </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://violinSonata.site/2020/create-daemon-process-in-golang/>https://violinSonata.site/2020/create-daemon-process-in-golang/</span>
+            </p>
+            
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://violinSonata.site/tags/golang/">
+                    #Golang</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://violinSonata.site/">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://violinSonata.site/2020/basic-concepts-of-network-security/" class="prev" rel="prev" title="网络安全基本概念"><i class="iconfont icon-left"></i>&nbsp;网络安全基本概念</a>
+         
+        
+        <a href="https://violinSonata.site/2020/detail-of-ssl-and-tls/" class="next" rel="next" title="SSL/TLS的工作原理">SSL/TLS的工作原理&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2017 - 2020</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+         </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://violinSonata.site/">Violin</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

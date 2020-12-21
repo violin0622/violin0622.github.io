@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="Violin">
+  <meta name="description" content="violin sonata">
+  <meta name="keywords" content="[Hugo blog]">
+  
+  <link rel="prev" href="https://violinSonata.site/2019/hello-world/" />
+  <link rel="next" href="https://violinSonata.site/2019/disadvance-on-even/" />
+  <link rel="canonical" href="https://violinSonata.site/2019/virtualenvwrapper/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           Python虚拟环境指南 | Sonata for solo Violin
+       
+  </title>
+  <meta name="title" content="Python虚拟环境指南 | Sonata for solo Violin">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/violinSonata.site\/"
+    },
+    "articleSection" : "post",
+    "name" : "Python虚拟环境指南",
+    "headline" : "Python虚拟环境指南",
+    "description" : "\x3ch2 id=\x22安装-virtualenv\x22\x3e安装\x3ccode\x3evirtualenv\x3c\/code\x3e:\x3c\/h2\x3e\n\n\x3cpre\x3e\x3ccode class=\x22language-bash\x22\x3e$pip install virtualenv\n$virtualenv --version\n\x3c\/code\x3e\x3c\/pre\x3e\n\n\x3ch2 id=\x22安装-virtualenvwrapper\x22\x3e安装 \x3ccode\x3evirtualenvwrapper\x3c\/code\x3e:\x3c\/h2\x3e\n\n\x3cul\x3e\n\x3cli\x3e如果想要使用 virtualenvwrapper的话， 不必事先手动安装 virtualenv,  pip会自动解决该依赖。\x3c\/li\x3e\n\x3cli\x3e在windows环境下,应该安装其对应的windows版本 : \x3ccode\x3evirtualenvwrapper-win\x3c\/code\x3e。该版本仅能在 cmd 下工作， 如果在windows上使用\n模拟Linux命令行的工具， 如 git bash , cmder 等， 则可能会造成无法正常工作。\x3c\/li\x3e\n\x3c\/ul\x3e",
+    "inLanguage" : "en",
+    "author" : "Violin",
+    "creator" : "Violin",
+    "publisher": "Violin",
+    "accountablePerson" : "Violin",
+    "copyrightHolder" : "Violin",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-01-27 23:39:34 \x2b0800 CST",
+    "dateModified" : "2019-01-27 23:39:34 \x2b0800 CST",
+    "url" : "https:\/\/violinSonata.site\/2019\/virtualenvwrapper\/",
+    "wordCount" : "688",
+    "keywords" : [ "Python", "Sonata for solo Violin"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">Python虚拟环境指南</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://violinSonata.site/" rel="author">Violin</a> 
+                <span class="post-time">
+                on <time datetime=2019-01-27 itemprop="datePublished">2019-01-27</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://violinSonata.site/categories/%E7%BC%96%E7%A8%8B/"> 编程 </a>
+                        <a href="https://violinSonata.site/categories/python/"> Python </a>
+                        
+                </span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          <h2 id="安装-virtualenv">安装<code>virtualenv</code>:</h2>
+
+<pre><code class="language-bash">$pip install virtualenv
+$virtualenv --version
+</code></pre>
+
+<h2 id="安装-virtualenvwrapper">安装 <code>virtualenvwrapper</code>:</h2>
+
+<ul>
+<li>如果想要使用 virtualenvwrapper的话， 不必事先手动安装 virtualenv,  pip会自动解决该依赖。</li>
+<li>在windows环境下,应该安装其对应的windows版本 : <code>virtualenvwrapper-win</code>。该版本仅能在 cmd 下工作， 如果在windows上使用
+模拟Linux命令行的工具， 如 git bash , cmder 等， 则可能会造成无法正常工作。</li>
+</ul>
+
+<p>下载包:</p>
+
+<pre><code class="language-bash">$pip install virtualenvwrapper
+</code></pre>
+
+<p>创建虚拟环境目录：</p>
+
+<pre><code class="language-bash">$mkdir .pythonenv
+</code></pre>
+
+<p>修改<code>.bashrc</code>来添加环境变量:</p>
+
+<pre><code class="language-bash">#!/usr/bin/bash
+WORKON_HOME=$HOME/.pythonenv
+source /usr/local/bin/virtualenvwrapper.sh
+</code></pre>
+
+<p>ps：如果不创建并指定<code>WORKON_HOME</code>目录的话， 加载<code>virtualenvwrapper.sh</code>时会默认创建在 <code>$HOME/.virtualenv</code>目录。</p>
+
+<p>验证是否安装成功:</p>
+
+<pre><code class="language-sh">$virtualenvwrapper
+
+virtualenvwrapper is a set of extensions to Ian Bicking's virtualenv
+tool. The extensions include wrappers for creating and deleting
+virtual environments and otherwise managing your development workflow,
+making it easier to work on more than one project at a time without
+introducing conflicts in their dependencies.
+···
+</code></pre>
+
+<h2 id="在虚拟环境中设置环境变量">在虚拟环境中设置环境变量</h2>
+
+<p>使用 <strong>virtualenvwrapper</strong> 时， 会自动生成 <code>$VIRTUAL_ENV/bin/</code> 目录，可以利用里面的脚本定义特定于该虚拟环境的动作，例如设定环境变量。
+虚拟环境中设置的环境变量不会影响到虚拟环境外部，即使同一用户从其他终端登录并启用了另一个虚拟环境，那么在两边看到的环境变量也不会相互冲突。
+对于使用环境变量来管理开发，测试，生产等多个配置的项目来说， 可以使用这种方式来来管理项目配置 —— 甚至可以在同一台服务器上同时部署开发和测试等多个环境！</p>
+
+<pre><code class="language-bash">$workon app
+...
+$vim $VIRTUAL_ENV/bin/postactivate
+#!/bin/bash
+# This hook is sourced after this virtualenv is activated.
+export ENV=dev
+
+$vim $VIRTUAL_ENV/bin/postactivate
+#!/bin/bash
+# This hook is sourced before this virtualenv is deactivated.
+unset ENV
+</code></pre>
+
+<p>重新进入虚拟环境进行验证：</p>
+
+<pre><code class="language-bash">$deactivate
+$echo $ENV
+
+$workon app
+$echo $ENV
+dev
+$deactivate
+$echo $ENV
+
+$
+</code></pre>
+
+<p>除了每个虚拟环境特定的设置，还可以针对用户级别的全局配置——对于该用户的所有虚拟环境生效。
+方法就是编辑 <strong>$WORKON_HOME/</strong> 目录下的一系列脚本文件。
+更多详情可见官方文档:
+<a href="https://virtualenvwrapper.readthedocs.io/en/latest/scripts.html#scripts">https://virtualenvwrapper.readthedocs.io/en/latest/scripts.html#scripts</a></p>
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>Violin </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://violinSonata.site/2019/virtualenvwrapper/>https://violinSonata.site/2019/virtualenvwrapper/</span>
+            </p>
+            
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://violinSonata.site/tags/python/">
+                    #Python</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://violinSonata.site/">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://violinSonata.site/2019/hello-world/" class="prev" rel="prev" title="Hello World"><i class="iconfont icon-left"></i>&nbsp;Hello World</a>
+         
+        
+        <a href="https://violinSonata.site/2019/disadvance-on-even/" class="next" rel="next" title="Even主题的小吐槽">Even主题的小吐槽&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2017 - 2020</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+         </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://violinSonata.site/">Violin</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

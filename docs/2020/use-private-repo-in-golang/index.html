@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="Violin">
+  <meta name="description" content="violin sonata">
+  <meta name="keywords" content="[Hugo blog]">
+  
+  <link rel="prev" href="https://violinSonata.site/2020/basic-concept-of-rabbitmq/" />
+  <link rel="next" href="https://violinSonata.site/2020/use-grpc-in-golang/" />
+  <link rel="canonical" href="https://violinSonata.site/2020/use-private-repo-in-golang/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           Golang使用私有仓库 | Sonata for solo Violin
+       
+  </title>
+  <meta name="title" content="Golang使用私有仓库 | Sonata for solo Violin">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/violinSonata.site\/"
+    },
+    "articleSection" : "post",
+    "name" : "Golang使用私有仓库",
+    "headline" : "Golang使用私有仓库",
+    "description" : "本文基于go 1.13即以上进行演示。 将go代码推送到私有仓库之后， 如果想要在其他项目引用， 需要做以下设置。 设置go env # 设置代理， 多个用逗号分",
+    "inLanguage" : "en",
+    "author" : "Violin",
+    "creator" : "Violin",
+    "publisher": "Violin",
+    "accountablePerson" : "Violin",
+    "copyrightHolder" : "Violin",
+    "copyrightYear" : "2020",
+    "datePublished": "2020-08-31 14:51:20 \x2b0800 CST",
+    "dateModified" : "2020-08-31 14:51:20 \x2b0800 CST",
+    "url" : "https:\/\/violinSonata.site\/2020\/use-private-repo-in-golang\/",
+    "wordCount" : "579",
+    "keywords" : [ "go mod", "Sonata for solo Violin"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">Golang使用私有仓库</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://violinSonata.site/" rel="author">Violin</a> 
+                <span class="post-time">
+                on <time datetime=2020-08-31 itemprop="datePublished">2020-08-31</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://violinSonata.site/categories/%E7%BC%96%E7%A8%8B/"> 编程 </a>
+                        <a href="https://violinSonata.site/categories/golang/"> Golang </a>
+                        
+                </span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+            
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<p>本文基于<code>go 1.13</code>即以上进行演示。<br />
+将go代码推送到私有仓库之后， 如果想要在其他项目引用， 需要做以下设置。</p>
+
+<h2 id="设置go-env">设置go env</h2>
+
+<pre><code class="language-sh"># 设置代理， 多个用逗号分隔， 最后direct是直接从项目地址拉取。 
+# 这一步不是使用私有仓库必须设置的. 但是考虑到国内的网络情况, 应该大部分gopher都设置了该项吧. 
+go env -w GOPROXY=&quot;https://goproxy.cn,direct&quot;
+
+# 设置不使用代理的域名, 用逗号分开多个。 可以设置通配符*，或者指定路径
+go env -w GOPRIVATE=&quot;*.gitlab.com,private.gitlab.com/myrepo&quot;
+
+</code></pre>
+
+<h2 id="设置git-token">设置git token</h2>
+
+<p>只设置了 go env 还不够。 无论 go mod 也好， go get 也好， 都是依赖git来拉取项目代码的， 如果git没有访问仓库的权限依然不能正确拉取。<br />
+以 Gitlab 为例， 需要创建一个访问Token， go 控制 git 拉取代码时使用该token进行认证， 才可以拉取代码。<br />
+<figure><img src="/images/ring.svg" data-sizes="auto" data-src="/post/resources/_gen/images/申请gitlab的token.png" alt="申请token" class="lazyload"><figcaption class="image-caption">申请token</figcaption></figure></p>
+
+<p>创建token之后， 对git进行全局设置:</p>
+
+<pre><code class="language-sh">git config --global url.&quot;https://{username}:{token}@private.gitlab.com/myrepo&quot;.insteadOf &quot;https://private.gitlab.com/myrepo&quot;
+</code></pre>
+
+<p>然后就可以正常拉取私有仓库的代码了。</p>
+
+<p><code>note</code> Coding的设置和Gitlab不太一样。 首先Coding的代码仓库网页URI和Git地址并不一样。<br />
+例如我的项目访问网页时地址是<code>https://mlt.coding.net/p/riverrun/gogfapi</code>， 而git地址是<code>https://e.coding.net/mlt/riverrun/gogfapi.git</code>。<br />
+在设置GOPRIVATE和git时， 应使用git地址， 且最后需要附带<code>.git</code>。 在项目中引用模块时， <code>import</code> 语句也需要写git地址， 同样需要带着<code>.git</code>后缀。</p>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>Violin </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://violinSonata.site/2020/use-private-repo-in-golang/>https://violinSonata.site/2020/use-private-repo-in-golang/</span>
+            </p>
+            
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://violinSonata.site/tags/go-mod/">
+                    #go mod</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://violinSonata.site/">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://violinSonata.site/2020/basic-concept-of-rabbitmq/" class="prev" rel="prev" title="Basic Concept of Rabbitmq"><i class="iconfont icon-left"></i>&nbsp;Basic Concept of Rabbitmq</a>
+         
+        
+        <a href="https://violinSonata.site/2020/use-grpc-in-golang/" class="next" rel="next" title="Golang使用gRPC指南">Golang使用gRPC指南&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2017 - 2020</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+         </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://violinSonata.site/">Violin</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+     <link href="//lib.baomitu.com/lightgallery/1.6.11/css/lightgallery.min.css" rel="stylesheet">  
+      
+     <script src="/js/vendor_gallery.min.js" async="" ></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

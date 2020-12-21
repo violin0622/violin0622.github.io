@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="Violin">
+  <meta name="description" content="violin sonata">
+  <meta name="keywords" content="[Hugo blog]">
+  
+  <link rel="prev" href="https://violinSonata.site/2019/configmap/" />
+  <link rel="next" href="https://violinSonata.site/2020/access-host-network-in-docker/" />
+  <link rel="canonical" href="https://violinSonata.site/2020/useful-operates-in-mysql/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           MySQL常用操作 | Sonata for solo Violin
+       
+  </title>
+  <meta name="title" content="MySQL常用操作 | Sonata for solo Violin">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/violinSonata.site\/"
+    },
+    "articleSection" : "post",
+    "name" : "MySQL常用操作",
+    "headline" : "MySQL常用操作",
+    "description" : "数据库概念关系 服务器 -\x26gt; 实例 -\x26gt; 数据库 -\x26gt; 表 -\x26gt; 记录 登录数据库实例 mysql \\ -u{用户名} \\ #如果不指定-u， 则使用 root 用户。 -p{密码} \\ #如果指定-p而",
+    "inLanguage" : "en",
+    "author" : "Violin",
+    "creator" : "Violin",
+    "publisher": "Violin",
+    "accountablePerson" : "Violin",
+    "copyrightHolder" : "Violin",
+    "copyrightYear" : "2020",
+    "datePublished": "2020-02-19 15:14:38 \x2b0800 CST",
+    "dateModified" : "2020-02-19 15:14:38 \x2b0800 CST",
+    "url" : "https:\/\/violinSonata.site\/2020\/useful-operates-in-mysql\/",
+    "wordCount" : "1448",
+    "keywords" : [ "MySQL", "Sonata for solo Violin"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">MySQL常用操作</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://violinSonata.site/" rel="author">Violin</a> 
+                <span class="post-time">
+                on <time datetime=2020-02-19 itemprop="datePublished">2020-02-19</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://violinSonata.site/categories/middleware/"> Middleware </a>
+                        
+                </span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<h2 id="数据库概念关系">数据库概念关系</h2>
+
+<p>服务器 -&gt; 实例 -&gt; 数据库 -&gt; 表 -&gt; 记录</p>
+
+<h2 id="登录数据库实例">登录数据库实例</h2>
+
+<pre><code class="language-sh">mysql  \
+    -u{用户名}  \   #如果不指定-u， 则使用 root 用户。
+    -p{密码} \      #如果指定-p而不输入密码， 则会在交互式界面中询问密码。 这样可以避免密码泄漏。 
+    -h{主机地址} \
+    -P{服务端口}
+
+</code></pre>
+
+<h2 id="常用信息查看">常用信息查看</h2>
+
+<pre><code class="language-sql">select user();      -- 当前用户
+select database();  -- 当前数据库
+select version();   -- 当前版本
+select now();       -- 当前时间
+</code></pre>
+
+<h2 id="数据库管理">数据库管理</h2>
+
+<h3 id="创建数据库">创建数据库</h3>
+
+<pre><code class="language-sql">create database {数据库名}
+    character set {字符集}      -- 可选参数
+    collate {检查名}            -- 可选参数
+    default encryption {Y/N};   -- 可选参数
+</code></pre>
+
+<p><code>charactor set</code> 用于指定数据库级别的字符集。 从MySQL8.0开始， 默认字符集是<code>utf8mb4</code>, 这是一种支持 emoji 表情的utf8字符集。 🎉<br />
+<code>collate</code> 用于指定数据库级别的字符型数据排序规则。 从8.0之后， 排序规则默认为<code>utf8mb4_0900_ai_ci</code>。 一般不用改。<br />
+<code>encryption</code> 用于指定数据库的加密算法。 默认为不使用加密。</p>
+
+<h3 id="查看-删除数据库">查看/删除数据库</h3>
+
+<pre><code class="language-sql">show databases;              -- 查看所有数据库
+drop database {数据库名};   -- 删除指定名称的数据库
+</code></pre>
+
+<h3 id="导出数据">导出数据</h3>
+
+<p><code>注意</code>：如果在命令行指定了-p， 则导出的sql文件第一行会有个warnning：<br />
+&gt; mysqldump: [Warning] Using a password on the command line interface can be insecure.</p>
+
+<p>这行warining不是注释，因此在其他数据库导入时会报语法错误。 解决办法有两个:<br />
+1. 在导出命令中不指定<code>-p</code>参数， 使用交互方式输入密码。【推荐】
+2. 在导出的sql文件中将这一行删除或注释掉。</p>
+
+<pre><code class="language-sh">mysqldump -u{用户名} -p{密码} \
+  -h{主机地址} -P{端口} \
+  {数据库名}            #如果要导出所有数据库， 则库名表名都不用指定。 \
+  {数据表名}            #如果要导出单个数据库所有表，则表名不用指定。 \
+   &gt; backup.sql         #重定向到备份文件中。 
+</code></pre>
+
+<h3 id="导入数据">导入数据</h3>
+
+<p>首先登陆数据库， 创建数据库与用户， 并为用户分配权限。</p>
+
+<pre><code class="language-sh">mysql -u{用户名} -p{密码} -h{主机地址} -P{端口} {数据库名} &lt; backup.sql
+</code></pre>
+
+<h3 id="导出数据-docker内">导出数据（docker内）</h3>
+
+<pre><code class="language-sh">docker exec -it mysql-instance mysqldump -u{user} -p{password} &gt; backup.sql
+</code></pre>
+
+<h3 id="导入数据-docker内">导入数据（docker内）</h3>
+
+<p>首先将文件拷贝到docker内， 然后在容器内的命令行执行导入命令。</p>
+
+<pre><code class="language-sh">docker cp ./backup.sql mysql-instance:/tmp/backup.sql
+docker exec mysql-instance 'mysql -u{user} -p{password} source /tmp/backup.sql'
+</code></pre>
+
+<h2 id="用户管理">用户管理</h2>
+
+<h3 id="查看系统内所有用户及登录地址">查看系统内所有用户及登录地址</h3>
+
+<pre><code class="language-sql">select distinct 
+    concat('user: ''',user,'''@''',host,''';') as query 
+    from mysql.user;
+</code></pre>
+
+<h3 id="查看某个用户的所有权限">查看某个用户的所有权限</h3>
+
+<pre><code class="language-sql">select * from mysql.user where user={用户名};
+</code></pre>
+
+<p>在<code>mysql.user</code>中， user和host两个字段共同构成主键。</p>
+
+<h3 id="创建用户与授权">创建用户与授权</h3>
+
+<pre><code class="language-sql">-- 创建与授权分两步
+create user '{用户名}'@'{主机域}' identified by '{密码}';
+grant {权限列表} on {数据库名}.{数据表名} to '{用户名}'@'{主机域}';
+-- 分配所有权限
+grant all on *.* to 'admin'@'localhost';
+-- 查看用户的权限
+show grants for '{用户名}'@'{主机域}';
+</code></pre>
+
+<p>创建用户时需要同时指定用户名和主机域， 因为它们共同构成<code>mysql.user</code>的主键。 如果不限制该用户可以在哪台主机访问， 则主机域可以设定为<code>%</code>， 代表任意主机。 如果不指定主机域， 同样使用<code>%</code>作为默认值。</p>
+
+<h2 id="数据表管理">数据表管理</h2>
+
+<h3 id="建表">建表</h3>
+
+<pre><code class="language-sql">create table 表名(
+    -- not null, default, auto_increment, comment 都是可选参数
+    id int not null  auto_increment comment '主键',   
+    name varchar(10) not null default '' comment '名字',
+    primary key(`id`),
+    unique key `k索引名` (`name`) -- 最后一行不能以逗号结尾
+)charset=utf8mb4;
+</code></pre>
+
+<h3 id="修改表">修改表</h3>
+
+<h4 id="新加字段">新加字段</h4>
+
+<pre><code class="language-sql">-- 后一个列名用于指定新列的位置
+alter table 表名 add column 字段名 enum('M','F') not null after 列名;
+-- 将新字段设置为第一列
+alter table 表名 add column 字段名 enum('M','F') not null first;
+</code></pre>
+
+<h4 id="删除字段">删除字段</h4>
+
+<pre><code class="language-sql">alter table 表名 drop 字段名;
+</code></pre>
+
+<h4 id="更新字段">更新字段</h4>
+
+<pre><code class="language-sql">alter table 表名 change 字段名 enum('M','F') not null ;
+</code></pre>
+
+<h4 id="修改字段数据类型">修改字段数据类型</h4>
+
+<pre><code class="language-sql">alter table 表名 modify 字段名 enum('M','F');
+</code></pre>
+
+<p>修改字段数据类型之后， 其他的配置如 not null 等不会变。</p>
+
+<h4 id="添加-删除字段默认值">添加/删除字段默认值</h4>
+
+<pre><code class="language-sql">alter table 表名 alter 字段名 set default 默认值;
+alter table 表名 alter 字段名 drop default;
+</code></pre>
+
+<h3 id="重命名表名">重命名表名</h3>
+
+<pre><code class="language-sql">alter table 表名 rename to 新表名;
+</code></pre>
+
+<h2 id="索引管理">索引管理</h2>
+
+<p>除了可以在创建数据表等时候指定索引之外， 还可以单独对索引进行管理。</p>
+
+<h3 id="查看索引">查看索引</h3>
+
+<pre><code class="language-sql">show table from 表名;
+</code></pre>
+
+<h3 id="创建索引">创建索引</h3>
+
+<pre><code class="language-sql">create index 索引名 on 表名(字段名);
+-- 创建唯一索引
+create unique index 索引名 on 表名(字段名);
+</code></pre>
+
+<h3 id="删除索引">删除索引</h3>
+
+<pre><code class="language-sql">drop index 索引名 on 表名;
+alter table  表名 drop index 索引名;
+</code></pre>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>Violin </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://violinSonata.site/2020/useful-operates-in-mysql/>https://violinSonata.site/2020/useful-operates-in-mysql/</span>
+            </p>
+            
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://violinSonata.site/tags/mysql/">
+                    #MySQL</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://violinSonata.site/">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://violinSonata.site/2019/configmap/" class="prev" rel="prev" title="Kubernetes中的容器配置管理：ConfigMap"><i class="iconfont icon-left"></i>&nbsp;Kubernetes中的容器配置管理：ConfigMap</a>
+         
+        
+        <a href="https://violinSonata.site/2020/access-host-network-in-docker/" class="next" rel="next" title="Docker容器中访问宿主机网络">Docker容器中访问宿主机网络&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2017 - 2020</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+         </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://violinSonata.site/">Violin</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

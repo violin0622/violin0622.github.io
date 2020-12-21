@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="Violin">
+  <meta name="description" content="violin sonata">
+  <meta name="keywords" content="[Hugo blog]">
+  
+  <link rel="prev" href="https://violinSonata.site/2020/use-private-repo-in-golang/" />
+  
+  <link rel="canonical" href="https://violinSonata.site/2020/use-grpc-in-golang/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           Golang使用gRPC指南 | Sonata for solo Violin
+       
+  </title>
+  <meta name="title" content="Golang使用gRPC指南 | Sonata for solo Violin">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/violinSonata.site\/"
+    },
+    "articleSection" : "post",
+    "name" : "Golang使用gRPC指南",
+    "headline" : "Golang使用gRPC指南",
+    "description" : "本文以一个简单的CURD服务为例演示了如果一步步使用grpc的接口. 使用protobuf 编写proto文件 proto文件是定义整个proto",
+    "inLanguage" : "en",
+    "author" : "Violin",
+    "creator" : "Violin",
+    "publisher": "Violin",
+    "accountablePerson" : "Violin",
+    "copyrightHolder" : "Violin",
+    "copyrightYear" : "2020",
+    "datePublished": "2020-09-04 15:05:10 \x2b0800 CST",
+    "dateModified" : "2020-09-04 15:05:10 \x2b0800 CST",
+    "url" : "https:\/\/violinSonata.site\/2020\/use-grpc-in-golang\/",
+    "wordCount" : "4526",
+    "keywords" : [ "Golang","gRPC", "Sonata for solo Violin"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">Golang使用gRPC指南</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://violinSonata.site/" rel="author">Violin</a> 
+                <span class="post-time">
+                on <time datetime=2020-09-04 itemprop="datePublished">2020-09-04</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://violinSonata.site/categories/%E7%BC%96%E7%A8%8B/"> 编程 </a>
+                        
+                </span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<p>本文以一个简单的CURD服务为例演示了如果一步步使用grpc的接口.</p>
+
+<h2 id="使用protobuf">使用protobuf</h2>
+
+<h3 id="编写proto文件">编写proto文件</h3>
+
+<p>proto文件是定义整个protobuf生态的基石, protobuf,grpc, grpc-gateway等代码都是通过proto文件来生成桩代码的.<br />
+proto文件主要包含 syntax, package, option, import, message, service 等几部分.<br />
+- syntax<br />
+  用于指定proto文件使用了protobuf协议的版本. 可以选择proto2或proto3, 推荐使用较新的版本proto3;
+- package<br />
+  用于指定当前proto文件所在的包名称, 只需要声明完整包名的最后一部分即可. 例如某个文件<code>A.proto</code>位于<code>github.com/someproject/api/Apple.proto</code>, 那么这个文件的package只需要指定some_apis即可.<br />
+- option<br />
+  用于针对特定场景设定一些选项. 例如在v1.20以后的版本中, 用户如果想要将proto编译成Golang代码, 就需要指定<code>go_package</code>选项.
+- import<br />
+  proto文件可以分成多个, 不同的proto文件之间可以使用import字段互相引用, 达到代码复用的目的. import声明的路径可以是相对路径, 例如如果引入同一个目录下的其他proto文件, 则可以直接写文件名. 如果引入其他目录的文件, 也不必从文件系统根目录或项目根目录开始写起, 但是在编译的时候必须通过<code>-I</code>参数指明找到被引入文件的起始路径, 换句话说 <code>-I</code>+<code>import</code> 需要指向proto文件的路径.
+- message<br />
+  message用于定义数据结构.  如果不使用grpc远程调用, 而只是用protobuf作为数据传输的格式的话,  那么只需要定义message即可, 不需要定义service.
+- service<br />
+  用于定义API服务的通信接口.</p>
+
+<p>我们先只用protobuf, 因此只需要不需要声明service, 只需要定义message就够了.</p>
+
+<pre><code class="language-proto">syntax = &quot;proto3&quot;;
+package api;
+option go_package=&quot;github.com/violin0622/grpc-apple/api&quot;;
+
+message Apple{
+  int32 number = 1;
+  string name = 2;
+  Size size = 3;
+
+  enum Size{
+    SIZE_UNDEFINED = 0;
+    BIG = 4;
+    MID = 5;
+    SMALL = 6;
+  }
+}
+</code></pre>
+
+<h3 id="下载protoc工具">下载protoc工具</h3>
+
+<p>protoc 是用于编译proto文件生成对应桩代码的命令行工具. protoc工具使用C++编写, 其项目地址位于<a href="https://github.com/protocolbuffers/protobuf">https://github.com/protocolbuffers/protobuf </a> .<br />
+对于非C++的用户, 可以直接下载预先编译好的二进制文件: <a href="https://github.com/protocolbuffers/protobuf/releases">https://github.com/protocolbuffers/protobuf/releases </a>, 例如对于macOS用户, 选择 <code>protobuf-3.13.0-osx-x86_64.tar.gz</code>下载解压, 并放在$PATH下面.</p>
+
+<h3 id="下载protoc插件-protoc-gen-go">下载protoc插件: protoc-gen-go</h3>
+
+<p>protoc编译proto文件时, 根据生成不同语言的桩代码的需求, 需要指定不同的插件. 例如需要生成Golang的桩代码, 便需要指定go语言的插件: <code>protoc-gen-go</code>.<br />
+值得一提的是, golang的插件在2020年初经历了比较大的变更: 原来其项目地址位于<a href="https://github.com/golang/protobuf">github.com/golang/protobuf</a>, 代码中的导入地址是 <code>github.com/golang/protobuf/proto</code>, 其版本迭代到 v1.4,  2020年三月份由新的项目取代: <a href="https://github.com/protocolbuffers/protobuf-go">google.golang.org/protobuf</a>, 版本从 v1.20 开始迭代. v1.20相对于v1.4作出了许多重大的变更, 包括部分API变更, 以及原有的部分可导出模块不再导出. 对于中国开发者来说比较重要的变更在于修复了打印结构体内的非ASCII字符会乱码的bug( <a href="https://github.com/golang/protobuf/issues/572">Issue #572</a> ).<br />
+插件可以直接在项目的Github Release页面下载编译好的版本, 或者 git clone 然后自行安装:</p>
+
+<pre><code class="language-sh">git clone -b v1.31 git@github.com:protocolbuffers/protobuf-go.git
+cd protobuf-go
+# go install 会将项目编译生产的二进制文件放入 $GOPATH/bin. 
+# 需要把 $GOPATH/bin 加入 $PATH 以使protoc能够找到. 
+go install .
+</code></pre>
+
+<h3 id="编译">编译</h3>
+
+<p>编译使用的命令参数可以见另一篇文章.</p>
+
+<pre><code class="language-sh">protoc \
+  --go_out=paths=source_relative:. \
+  api/apple.proto
+</code></pre>
+
+<p>可以在api目录下看到生成的桩代码 <code>apple.pb.go</code></p>
+
+<pre><code>├── README.md
+├── api
+│   ├── apple.pb.go
+│   └── apple.proto
+├── go.mod
+└── main.go
+</code></pre>
+
+<h3 id="使用">使用</h3>
+
+<p>为了使用 apple.pb.go, 我们还需要在Golang代码中导入protobuf的运行库 <code>google.golang.org/protobuf/proto</code>, 然后利用其中的<code>Marshal</code>和<code>Unmashal</code> 两个API 进行消息的编码解码.
+<a href="https://github.com/protocolbuffers/protobuf/blob/master/examples/add_person.go">examples</a></p>
+
+<pre><code class="language-go">package main
+import(
+	&quot;bufio&quot;
+	&quot;fmt&quot;
+	&quot;io&quot;
+	&quot;io/ioutil&quot;
+	&quot;log&quot;
+	&quot;os&quot;
+	&quot;strings&quot;
+
+  `google.golang.org/protobuf/proto`
+
+  `github.com/grpc-apple/api`
+)
+
+func main(){
+	if len(os.Args) != 2 {
+		log.Fatalf(&quot;Usage:  %s ADDRESS_BOOK_FILE\n&quot;, os.Args[0])
+	}
+	fname := os.Args[1]
+
+	// Read the existing address book.
+	in, err := ioutil.ReadFile(fname)
+	if err != nil {
+		if os.IsNotExist(err) {
+			fmt.Printf(&quot;%s: File not found.  Creating new file.\n&quot;, fname)
+		} else {
+			log.Fatalln(&quot;Error reading file:&quot;, err)
+		}
+	}
+
+	// [START marshal_proto]
+	book := &amp;pb.AddressBook{}
+	// [START_EXCLUDE]
+	if err := proto.Unmarshal(in, book); err != nil {
+		log.Fatalln(&quot;Failed to parse address book:&quot;, err)
+	}
+
+	// Add an address.
+	addr, err := promptForAddress(os.Stdin)
+	if err != nil {
+		log.Fatalln(&quot;Error with address:&quot;, err)
+	}
+	book.People = append(book.People, addr)
+	// [END_EXCLUDE]
+
+	// Write the new address book back to disk.
+	out, err := proto.Marshal(book)
+	if err != nil {
+		log.Fatalln(&quot;Failed to encode address book:&quot;, err)
+	}
+	if err := ioutil.WriteFile(fname, out, 0644); err != nil {
+		log.Fatalln(&quot;Failed to write address book:&quot;, err)
+	}
+	// [END marshal_proto]
+}
+</code></pre>
+
+<h2 id="使用grpc">使用grpc</h2>
+
+<p>我们需要查询, 创建, 更新, 修改, 删除五个接口.</p>
+
+<h3 id="编写proto文件-1">编写proto文件</h3>
+
+<p>事实上, 所有的定义都可以写进一个proto文件里, 不过在复杂项目中这样显然不好. 本文使用了多个不同目录下的proto文件, 以演示在复杂项目中不同的定义是怎样互相引用的.<br />
+此处我们为了定义五个接口而在新的目录<code>api/operation/</code>创建了新的<code>operations.proto</code>文件.<br />
+值得一提的是导入<code>apple.proto</code>文件时指定的路径. 上文已经说了import与-I参数的关系, 实际上这两个参数还关系着生成的桩代码的位置. 在本项目中, 希望将桩代码与对应的proto文件放在一起.</p>
+
+<pre><code class="language-proto">syntax = &quot;proto3&quot;;
+package operation;
+option go_package=&quot;github.com/violin0622/grpc-apple/api/operation&quot;;
+// 引入protobuf官方提供的Empty结构作为部分接口的空返回值. 
+import &quot;google/protobuf/empty.proto&quot;;
+// 引入protobuf官方提供的Field_Mask用于支持修改操作. 
+import &quot;google/protobuf/field_mask.proto&quot;;
+// 引入上级目录的apple文件以复用定义
+import &quot;api/apple.proto&quot;;
+
+service AppleService{
+  rpc DescribeApple(DescribeAppleRequest) returns (api.Apple) {}
+  rpc CreateApple(CreateAppleRequest) returns (api.Apple) {}
+  rpc UpdateApple(UpdateAppleRequest) returns (api.Apple) {}
+  rpc ModifyApple(ModifyAppleRequest) returns (api.Apple) {}
+  rpc DestroyApple(DestroyAppleRequest) returns (google.protobuf.Empty) {}
+}
+
+// 为了提供调用接口, 我们新声明了五个消息类型, 需要定义. 
+message DescribeAppleRequest{
+  int32 number = 1;
+}
+message CreateAppleRequest{
+  string name = 2;
+  api.Apple.Size size = 3;
+}
+// 更新操作: 必须指定对象全部的属性, 
+// 对于未指定的属性, 应该将其设定为空或默认值; 
+message UpdateAppleRequest{
+  int32 number = 1;
+  string name = 2;
+  api.Apple.Size size = 3;
+}
+// 修改操作: 只需要设定对象需要变更的属性, 
+// 对于未指定的属性, 会保留原来的值. 
+// grpc中为了支持修改操作, 需要添加额外的FieldMask字段. 
+// 不过好在该字段的值不需要用户设定, grpc会自动生成. 
+message ModifyAppleRequest{
+  int32 number = 1;
+  string name = 2;
+  api.Apple.Size size = 3;
+  google.protobuf.FieldMask mask = 4;
+}
+
+message DestroyAppleRequest{
+  string name = 1;
+}
+</code></pre>
+
+<h3 id="下载protoc插件-protoc-gen-go-grpc">下载protoc插件: protoc-gen-go-grpc</h3>
+
+<p>同 protoc-gen-go 一样, 生成grpc代码也需要对应的插件: protoc-gen-go-grpc. 在<code>github.com/golang/protobuf</code>将protoc-gen-go代码的归属权托管给了<code>golang.google.org/grpc-go</code>(参考<a href="https://github.com/golang/protobuf/issues/903">golang/protobuf #903</a>), 从此作为grpc-go的一个工具, 生成grpc桩代码的方式也发生了巨大的变化.<br />
+在protoc-go v1.4 版本之前, 也就是旧项目中, protoc-grpc是作为 protoc-gen-go的插件存在的, 也就是protoc的插件的插件.<br />
+而在 protoc-go v1.20 之后, 也就是新项目中, protoc-grpc是作为protoc的插件存在, 也就是“升级”了, 从插件的插件变成了独立的插件.<br />
+proto-gen-go-grpc 目前还没有发布预编译的新插件, 想要使用的话必须自行编译安装:</p>
+
+<pre><code class="language-sh"># 直接安装:
+go get -u google.golang.org/grpc
+
+# 或者这样:
+git clone git@github.com:grpc/grpc-go.git
+cd grpc-go &amp;&amp; go install .
+</code></pre>
+
+<h3 id="编译-1">编译</h3>
+
+<p>由于存在新旧两种插件, 因此编译命令也有了两种.<br />
+值得一提的是, protoc 不支持一次性编译多个包, 如果指定了多个包, 会造成错误.<br />
+旧版命令:</p>
+
+<pre><code class="language-sh">protoc \
+    --go_out=plugins=grpc,paths=source_relative:. \
+    api/apple.proto 
+
+protoc \
+  -Iapi
+  --go_out=plugins=grpc,paths=source_relative:. \
+  api/operation/operations.proto
+</code></pre>
+
+<p>新版命令:</p>
+
+<pre><code class="language-sh">protoc \
+  --go_out=paths=source_relative:. \
+  --go-grpc_out=paths=source_relative:. \
+  api/apple.proto
+
+protoc \
+  --go_out=paths=source_relative:. \
+  --go-grpc_out=paths=source_relative:. \
+  api/operation/operations.proto
+</code></pre>
+
+<p>显然新版命令比旧版的更长了 -,-!</p>
+
+<p>编译之后可以看到proto文件所在目录下多了生成的桩代码.
+<code>apple.pb.go</code>是为api/apple.proto生成的; <code>operations.pb.go</code> 是为operations.proto中的message生成的; <code>operations_grpc.pb.go</code> 是为operations.proto中service的部分生成的. 为什么message和service要分别生成两个文件, 我也不知道.</p>
+
+<pre><code>├── README.md
+├── api
+│   ├── apple.pb.go
+│   ├── apple.proto
+│   └── operation
+│       ├── operations.pb.go
+│       ├── operations.proto
+│       └── operations_grpc.pb.go
+├── go.mod
+└── main.go
+</code></pre>
+
+<h3 id="实现接口">实现接口</h3>
+
+<p>新建一个service 包, 将几个接口的具体实现放在里面:<br />
+service/service.go:</p>
+
+<pre><code class="language-go">package service
+
+import (
+	&quot;context&quot;
+	&quot;log&quot;
+
+	&quot;github.com/golang/protobuf/ptypes/empty&quot;
+
+	. &quot;github.com/violin0622/grpc-apple/api/operation&quot;
+	. &quot;github.com/violin0622/grpc-apple/api&quot;
+)
+
+// protoc-gen-go-grpc v1.20 之后, 实现服务的时候必须嵌入 UnimplementedAppleServiceServer 以保证能够向后兼容.
+type AppleService struct {
+	UnimplementedAppleServiceServer
+}
+
+func (*AppleService) DescribeApple(ctx context.Context, req *DescribeAppleRequest) (*Apple, error) {
+	return &amp;Apple{}, nil
+}
+func (*AppleService) CreateApple(ctx context.Context, req *CreateAppleRequest) (*Apple, error) {
+	log.Println(req)
+	return &amp;Apple{}, nil
+}
+func (*AppleService) UpdateApple(ctx context.Context, req *UpdateAppleRequest) (*Apple, error) {
+	return &amp;Apple{}, nil
+}
+func (*AppleService) ModifyApple(ctx context.Context, req *ModifyAppleRequest) (*Apple, error) {
+	return &amp;Apple{}, nil
+}
+func (*AppleService) DestroyApple(ctx context.Context, req *DestroyAppleRequest) (*empty.Empty, error) {
+	return &amp;empty.Empty{}, nil
+}
+</code></pre>
+
+<h3 id="使用-1">使用</h3>
+
+<p>代码位于<code>simple-grpc</code>:</p>
+
+<pre><code class="language-go">package main
+
+import (
+	&quot;context&quot;
+	&quot;log&quot;
+	&quot;net&quot;
+
+	&quot;github.com/golang/protobuf/ptypes/empty&quot;
+	&quot;google.golang.org/grpc&quot;
+	&quot;google.golang.org/grpc/reflection&quot;
+
+	&quot;github.com/violin0622/grpc-apple/api&quot;
+	. &quot;github.com/violin0622/grpc-apple/api/operation&quot;
+)
+
+
+func main() {
+	grpcServer := grpc.NewServer()
+	RegisterAppleServiceServer(grpcServer, &amp;AppleService{})
+	reflection.Register(grpcServer)
+
+	if l, err := net.Listen(`tcp`, `:9000`); err != nil {
+		log.Fatal(`cannot listen to port 9000: `, err)
+	} else if err = grpcServer.Serve(l); err != nil {
+		log.Fatal(`cannot start service:`, err)
+	}
+}
+</code></pre>
+
+<h2 id="使用grpc-gateway">使用grpc-gateway</h2>
+
+<p><a href="https://github.com/grpc-ecosystem/grpc-gateway">grpc-gateway</a> 是grpc-ecosystem 的子项目, 用于提供grpc的反向代理, 实现开发GRPC, 提供RestAPI的目的.<br />
+grpc-gateway 同样也是 protoc 的插件, 并且仅支持生成Golang语言的桩代码.<br />
+但是, 生成的反向代理可以作为独立的进程, 因此实际可以支持各种语言的grpc服务.  只不过作为Golang语言可以实现更多的特性, 比如复用端口同时提供grpc和http两种接口.</p>
+
+<h3 id="修改operations-proto">修改operations.proto</h3>
+
+<p>为了使用grpc-gateway, 需要在 operations.proto 中引入grpc-gateway的proto文件, 并在每个rpc中添加配置.</p>
+
+<pre><code class="language-proto">syntax = &quot;proto3&quot;;
+package operation;
+option go_package=&quot;github.com/violin0622/grpc-apple/operation/api&quot;;
+// 引入protobuf官方提供的Empty结构作为部分接口的空返回值. 
+import &quot;google/protobuf/empty.proto&quot;;
+// 引入protobuf官方提供的Field_Mask用于支持修改操作. 
+import &quot;google/protobuf/field_mask.proto&quot;;
+// 引入annotation用于定义gateway
+import &quot;google/api/annotations.proto&quot;;
+// 引入上级目录的apple文件以复用定义
+import &quot;apple.proto&quot;;
+
+service AppleService{
+  rpc DescribeApple(DescribeAppleRequest) returns (Apple) {
+    option (google.api.http).get = &quot;/apples/{number}&quot;;
+  }
+  rpc CreateApple(CreateAppleRequest) returns (Apple) {
+    option (google.api.http) = {
+      post: &quot;/apples&quot;
+      body: &quot;*&quot;
+    };
+  }
+  rpc UpdateApple(UpdateAppleRequest) returns (Apple) {
+    option (google.api.http) = {
+      put: &quot;/apples/{number}&quot;
+      body: &quot;*&quot;
+    };
+  }
+  rpc ModifyApple(ModifyAppleRequest) returns (Apple) {
+    option (google.api.http) = {
+      patch: &quot;/apples/{number}&quot;
+      body: &quot;*&quot;
+    };
+  }
+  rpc DestroyApple(DestroyAppleRequest) returns (google.protobuf.Empty) {
+    option (google.api.http).delete = &quot;/apples/{number}&quot;;
+  }
+}
+
+// 为了提供调用接口, 我们新声明了五个消息类型, 需要定义. 
+message DescribeAppleRequest{
+  int32 number = 1;
+}
+message CreateAppleRequest{
+  string name = 2;
+  Apple.Size size = 3;
+}
+// 更新操作: 必须指定对象全部的属性, 
+// 对于未指定的属性, 应该将其设定为空或默认值; 
+message UpdateAppleRequest{
+  int32 number = 1;
+  string name = 2;
+  Apple.Size size = 3;
+}
+// 修改操作: 只需要设定对象需要变更的属性, 
+// 对于未指定的属性, 会保留原来的值. 
+// grpc中为了支持修改操作, 需要添加额外的FieldMask字段. 
+// 不过好在该字段的值不需要用户设定, grpc会自动生成. 
+message ModifyAppleRequest{
+  int32 number = 1;
+  string name = 2;
+  Apple.Size size = 3;
+  google.protobuf.FieldMask mask = 4;
+}
+
+message DestroyAppleRequest{
+  int32 number = 1;
+}
+</code></pre>
+
+<h3 id="下载-protoc-gen-grpc-gateway">下载 protoc-gen-grpc-gateway</h3>
+
+<pre><code class="language-sh">go get github.com/grpc-ecosystem/grpc-gateway
+</code></pre>
+
+<h3 id="编译-2">编译</h3>
+
+<p>apple.proto 我们已经编译过了并且没有修改过, 因此可以直接编译 operations.proto</p>
+
+<pre><code class="language-sh">protoc \
+    -I. \
+    -I$GOPATH/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.14.8/third_party/googleapis  \
+    --go_out=paths=source_relative:. \
+    --go-grpc_out=paths=source_relative:. \
+    --grpc-gateway_out=paths=source_relative:. \
+    api/operation/*.proto
+</code></pre>
+
+<h3 id="使用-2">使用</h3>
+
+<p>由于grpcServer监听端口会把线程Hang住, 因此需要通过<code>go</code>操作符创建额外的goroutine用于运行监听函数.<br />
+程序运行起来之后会监听两个端口: grpc服务监听本地8000端口, http服务监听本地9000端口, 并把请求转发到8000端口的grpc服务上.<br />
+此时可以使用 curl localhost:8000 通过http方式访问, 也可以使用 grpcurl -plaintext localhost:9000 通过grpc方式访问.</p>
+
+<pre><code class="language-go">package main
+
+import (
+	&quot;context&quot;
+	&quot;log&quot;
+	&quot;net&quot;
+	&quot;net/http&quot;
+
+	&quot;github.com/golang/protobuf/ptypes/empty&quot;
+	&quot;github.com/grpc-ecosystem/grpc-gateway/runtime&quot;
+	&quot;google.golang.org/grpc&quot;
+	&quot;google.golang.org/grpc/reflection&quot;
+
+	. &quot;github.com/violin0622/grpc-apple/api/operation&quot;
+	. &quot;github.com/violin0622/grpc-apple/api&quot;
+)
+
+// protoc-gen-go-grpc v1.20 之后, 实现服务的时候必须嵌入 UnimplementedAppleServiceServer 以保证能够向后兼容.
+type AppleService struct {
+	UnimplementedAppleServiceServer
+}
+
+func (*AppleService) DescribeApple(ctx context.Context, req *DescribeAppleRequest) (*Apple, error) {
+	return &amp;Apple{}, nil
+}
+func (*AppleService) CreateApple(ctx context.Context, req *CreateAppleRequest) (*Apple, error) {
+	log.Println(req)
+	return &amp;Apple{}, nil
+}
+func (*AppleService) UpdateApple(ctx context.Context, req *UpdateAppleRequest) (*Apple, error) {
+	return &amp;Apple{}, nil
+}
+func (*AppleService) ModifyApple(ctx context.Context, req *ModifyAppleRequest) (*Apple, error) {
+	return &amp;Apple{}, nil
+}
+func (*AppleService) DestroyApple(ctx context.Context, req *DestroyAppleRequest) (*empty.Empty, error) {
+	return &amp;empty.Empty{}, nil
+}
+
+func main() {
+	grpcServer := grpc.NewServer()
+	RegisterAppleServiceServer(grpcServer, &amp;AppleService{})
+	reflection.Register(grpcServer)
+	l, _ := net.Listen(`tcp`, `:8000`)
+	go grpcServer.Serve(l)
+
+	httpServer := runtime.NewServeMux()
+	RegisterAppleServiceHandlerFromEndpoint(
+		context.Background(),
+		httpServer,
+		`:8000`,
+		[]grpc.DialOption{grpc.WithInsecure()},
+	)
+
+	if err := http.ListenAndServe(`:9000`, httpServer); err != nil {
+		log.Fatal(`cannot start service: `, err)
+	}
+}
+
+</code></pre>
+
+<h2 id="gateway-与-grpc-使用相同的端口-使用tls">gateway 与 grpc 使用相同的端口(使用TLS)</h2>
+
+<p>基本思路是通过判断 Content-Type 字段来分辨入请求是基于HTTP还是GRPC, 然后分别转发到对应的server handler上.<br />
+代码位于 reuse-port-tls/server.go</p>
+
+<pre><code class="language-go">package main
+
+import (
+	&quot;context&quot;
+	&quot;log&quot;
+	&quot;net/http&quot;
+	&quot;strings&quot;
+
+	&quot;github.com/grpc-ecosystem/grpc-gateway/runtime&quot;
+	&quot;google.golang.org/grpc&quot;
+	&quot;google.golang.org/grpc/credentials&quot;
+	&quot;google.golang.org/grpc/reflection&quot;
+
+	. &quot;github.com/violin0622/grpc-apple/api/operation&quot;
+	&quot;github.com/violin0622/grpc-apple/service&quot;
+)
+
+func main() {
+	serverCred, err := credentials.NewServerTLSFromFile(`./server.pem`, `./server.key`)
+	if err != nil {
+		log.Fatal(err)
+	}
+	clientCred, err := credentials.NewClientTLSFromFile(`./server.pem`, `localhost`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	grpcServer := grpc.NewServer(grpc.Creds(serverCred))
+	RegisterAppleServiceServer(grpcServer, &amp;service.AppleService{})
+	reflection.Register(grpcServer)
+
+	httpServer := runtime.NewServeMux()
+	RegisterAppleServiceHandlerFromEndpoint(
+		context.Background(),
+		httpServer,
+		`:8000`,
+		[]grpc.DialOption{grpc.WithTransportCredentials(clientCred)},
+	)
+
+	http.ListenAndServeTLS(`:8000`, `./server.pem`, `./server.key`,
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+			if r.ProtoMajor == 2 &amp;&amp;
+				strings.Contains(r.Header.Get(`Content-Type`), `application/grpc`) {
+				log.Println(`grpc`)
+				grpcServer.ServeHTTP(w, r)
+			} else {
+				log.Println(`http`)
+				httpServer.ServeHTTP(w, r)
+			}
+		}),
+	)
+}
+</code></pre>
+
+<h2 id="gateway-与-grpc-使用相同的端口-不使用tls">gateway 与 grpc 使用相同的端口(不使用TLS)</h2>
+
+<p>代码位于 reuse-port-insecure/server.go.</p>
+
+<pre><code class="language-go">package main
+
+import (
+	&quot;context&quot;
+	&quot;log&quot;
+	&quot;net/http&quot;
+	&quot;strings&quot;
+
+	&quot;github.com/grpc-ecosystem/grpc-gateway/runtime&quot;
+	&quot;golang.org/x/net/http2&quot;
+	&quot;golang.org/x/net/http2/h2c&quot;
+	&quot;google.golang.org/grpc&quot;
+	&quot;google.golang.org/grpc/reflection&quot;
+
+	. &quot;github.com/violin0622/grpc-apple/api/operation&quot;
+	&quot;github.com/violin0622/grpc-apple/service&quot;
+)
+
+func main() {
+	grpcServer := grpc.NewServer()
+	RegisterAppleServiceServer(grpcServer, &amp;service.AppleService{})
+	reflection.Register(grpcServer)
+
+	httpServer := runtime.NewServeMux()
+	RegisterAppleServiceHandlerFromEndpoint(
+		context.Background(),
+		httpServer,
+		`:8000`,
+		[]grpc.DialOption{grpc.WithInsecure()},
+	)
+
+	http.ListenAndServe(
+		`:8000`,
+		h2c.NewHandler(
+			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+				if r.ProtoMajor == 2 &amp;&amp;
+					strings.Contains(r.Header.Get(`Content-Type`), `application/grpc`) {
+					log.Println(`grpc`)
+					grpcServer.ServeHTTP(w, r)
+				} else {
+					log.Println(`http`)
+					httpServer.ServeHTTP(w, r)
+				}
+			}),
+			&amp;http2.Server{}),
+	)
+}
+</code></pre>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>Violin </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://violinSonata.site/2020/use-grpc-in-golang/>https://violinSonata.site/2020/use-grpc-in-golang/</span>
+            </p>
+            
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://violinSonata.site/tags/golang/">
+                    #Golang</a></span>
+            
+            <span class="tag"><a href="https://violinSonata.site/tags/grpc/">
+                    #gRPC</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://violinSonata.site/">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://violinSonata.site/2020/use-private-repo-in-golang/" class="prev" rel="prev" title="Golang使用私有仓库"><i class="iconfont icon-left"></i>&nbsp;Golang使用私有仓库</a>
+         
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2017 - 2020</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+         </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://violinSonata.site/">Violin</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

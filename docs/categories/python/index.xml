@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Python on Sonata for solo Violin</title>
+    <link>https://violinSonata.site/categories/python/</link>
+    <description>Recent content in Python on Sonata for solo Violin</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 27 Jan 2019 23:39:34 +0800</lastBuildDate>
+    
+	<atom:link href="https://violinSonata.site/categories/python/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Python虚拟环境指南</title>
+      <link>https://violinSonata.site/2019/virtualenvwrapper/</link>
+      <pubDate>Sun, 27 Jan 2019 23:39:34 +0800</pubDate>
+      
+      <guid>https://violinSonata.site/2019/virtualenvwrapper/</guid>
+      <description>&lt;h2 id=&#34;安装-virtualenv&#34;&gt;安装&lt;code&gt;virtualenv&lt;/code&gt;:&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$pip install virtualenv
+$virtualenv --version
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;安装-virtualenvwrapper&#34;&gt;安装 &lt;code&gt;virtualenvwrapper&lt;/code&gt;:&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;如果想要使用 virtualenvwrapper的话， 不必事先手动安装 virtualenv,  pip会自动解决该依赖。&lt;/li&gt;
+&lt;li&gt;在windows环境下,应该安装其对应的windows版本 : &lt;code&gt;virtualenvwrapper-win&lt;/code&gt;。该版本仅能在 cmd 下工作， 如果在windows上使用
+模拟Linux命令行的工具， 如 git bash , cmder 等， 则可能会造成无法正常工作。&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

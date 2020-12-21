@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="Violin">
+  <meta name="description" content="violin sonata">
+  <meta name="keywords" content="[Hugo blog]">
+  
+  <link rel="prev" href="https://violinSonata.site/2020/detail-of-ssl-and-tls/" />
+  <link rel="next" href="https://violinSonata.site/2020/use-private-repo-in-golang/" />
+  <link rel="canonical" href="https://violinSonata.site/2020/basic-concept-of-rabbitmq/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           Basic Concept of Rabbitmq | Sonata for solo Violin
+       
+  </title>
+  <meta name="title" content="Basic Concept of Rabbitmq | Sonata for solo Violin">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/violinSonata.site\/"
+    },
+    "articleSection" : "post",
+    "name" : "Basic Concept of Rabbitmq",
+    "headline" : "Basic Concept of Rabbitmq",
+    "description" : "Message 消息 消息，消息是不具名的，它由消息头和消息体组成。消息体是不透明的，而消息头则由一系列的可选属性组成，这些属性包括routing-key（",
+    "inLanguage" : "en",
+    "author" : "Violin",
+    "creator" : "Violin",
+    "publisher": "Violin",
+    "accountablePerson" : "Violin",
+    "copyrightHolder" : "Violin",
+    "copyrightYear" : "2020",
+    "datePublished": "2020-08-24 15:25:07 \x2b0800 CST",
+    "dateModified" : "2020-08-24 15:25:07 \x2b0800 CST",
+    "url" : "https:\/\/violinSonata.site\/2020\/basic-concept-of-rabbitmq\/",
+    "wordCount" : "2619",
+    "keywords" : [ "RabbitMQ", "Sonata for solo Violin"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">Basic Concept of Rabbitmq</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://violinSonata.site/" rel="author">Violin</a> 
+                <span class="post-time">
+                on <time datetime=2020-08-24 itemprop="datePublished">2020-08-24</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://violinSonata.site/categories/middleware/"> Middleware </a>
+                        
+                </span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<h2 id="message-消息">Message 消息</h2>
+
+<p>消息，消息是不具名的，它由消息头和消息体组成。消息体是不透明的，而消息头则由一系列的可选属性组成，这些属性包括routing-key（路由键）、priority（相对于其他消息的优先权）、delivery-mode（指出该消息可能需要持久性存储）等。</p>
+
+<blockquote>
+<p>从消息的属性可以看出， RabbitMQ支持至少三个特性：
+1. 同一个消息路由分发至不同的队列中。<br />
+2. 不同的消息之间有优先级。
+3. 消息可以进行有选择的持久化。</p>
+</blockquote>
+
+<h2 id="publisher-生产者">Publisher 生产者</h2>
+
+<p>一个向交换器发布消息的客户端应用程序。 生产者并不会直接将消息发送到队列中， 而是发送到服务端的交换器上， 再由交换器按预设条件将消息分发到各个队列上， 或者直接将消息丢弃。</p>
+
+<h2 id="exchange-交换器">Exchange 交换器</h2>
+
+<p>用来接收生产者发送的消息并将这些消息路由给服务器中的队列。<br />
+&gt; 在RabbitMQ中， 消息并不是由生产者直接写入队列中的。 而是每条消息发到一个指定的交换器中， 再由交换器根据绑定的交换规则分发到队列中。 如果路由不到，或返回给生产者，或直接丢弃，或做其它处理。</p>
+
+<p>Exchange 具有四种类型，<code>direct</code>, <code>fanout</code>, <code>header</code>, <code>topic</code>。 <code>header</code> 和<code>topic</code>功能一样， 但性能较差， 不推荐使用。</p>
+
+<h3 id="fanout">Fanout</h3>
+
+<p>通过队列名进行绑定。 可以绑定多个队列， 每个消息都会发送到所有绑定的队列上。<br />
+扇形交换器不受RoutingKey和BindingKey的限制。<br />
+&gt; 使用Fanout就相当于将消息广播到所有绑定的队列上。</p>
+
+<h3 id="direct">Direct</h3>
+
+<p>交换器通过BindingKey和队列进行绑定， 生产者每条发送的消息都要带有一个RoutingKey。 交换器通过BindingKey和RoutingKey的匹配进行分发。 只有完全匹配（即RoutingKey == BindingKey）的才可以分发到对应的队列中。 如果一条消息不满足任意一个绑定键， 那么它将会被丢弃。<br />
+绑定时有如下几个特点：<br />
+- 不同的队列可以通过不同的BindingKey绑定到同一个交换器上， 此时交换器会根据消息的RoutingKey选择发送到哪个队列。
+- 多个不同的队列可以通过相同的BindingKey绑定到同一个交换器上， 交换器会将匹配的消息发送到通过该BindingKey绑定的所有队列上。
+- 单个队列可以使用多个BindingKey绑定到同一个交换器上， 当交换器收到满足任意一个BindingKey的消息时， 都会将消息发送到该队列上。</p>
+
+<h3 id="topic">Topic</h3>
+
+<p>主题交换器只能接受特定格式的路由键——必须是使用点<code>.</code>分隔开的若干个单词， 整个字符串最多255个字节。 与直连交换器类似， 主题交换器同样根据绑定队列时的绑定键和收到消息时的路由键来决定将消息分发到哪些队列上。 不同的是， 主题交换器允许在<strong>绑定键</strong>中使用两种通配符：<br />
+1. <code>*</code>， 代表一个由点分隔开的单词
+2. <code>#</code>， 代表0个或多个单词</p>
+
+<p>主题交换器同样支持直连交换器那样的复杂绑定。 当一个队列同时通过多个带有通配符的绑定键绑定到一个交换器上， 如果交换器发现一条消息的路由键同时匹配该队列的多个绑定键， 那么这条消息只会向该队列写入一次。</p>
+
+<h3 id="默认交换器">默认交换器</h3>
+
+<p>如果生产者在发送消息时不指定交换器， 可以使用空字符串指定默认交换器。 默认交换器会使用<code>RoutingKey</code>作为分发消息的依据。</p>
+
+<h2 id="routingkey-bindingkey-路由键-绑定键">RoutingKey/BindingKey 路由键/绑定键</h2>
+
+<p>将交换器与队列绑定到一起时指定的绑定规则叫做绑定键。 生产者发送消息时指定的分发规则叫做路由键。 不过在实际编程时，这两个参数可能使用相同的名称。 例如在python代码中：</p>
+
+<pre><code class="language-python"># 虽然参数叫 routing_key, 但实际是指定了绑定键
+channel.queue_bind(exchange='topic_logs', queue=queue_name, routing_key='*.topic')
+
+# 发送消息时指定了路由键
+channel.basic_publish(exchange='topic_logs', routing_key='log.topic', body='hello world')
+</code></pre>
+
+<h2 id="binding-绑定">Binding 绑定</h2>
+
+<p>绑定用于将服务器上的特定队列和交换器关联起来。 但是绑定操作并不是由服务器管理员执行的， 而是由客户端在生产时或消费时自行指定的。
+如果一个交换器没有绑定任何队列， 那么发到这个交换器的消息就会被丢弃。</p>
+
+<h2 id="queue-队列">Queue 队列</h2>
+
+<p>用来保存消息直到发送给消费者。它是消息的容器，也是消息的终点。一个消息可投入一个或多个队列。消息一直在队列里面，等待消费者连接到这个队列将其取走。 消息默认保存在内存中， 除非在创建队列时声明其支持持久化，  并且发送消息时声明该消息需要持久化， 这样该消息就会被刷写到磁盘中。</p>
+
+<h3 id="临时队列">临时队列</h3>
+
+<p>如果客户端在创建队列的时候使用了空字符串作为队列名， 则服务器会使用随机名称创建一个临时队列。 当消费者断开链接时， 临时队列就会被删除。 临时队列适用于消费者不关心队列中的“旧”数据， 而是希望每次连接到服务器时即可消费到最新数据的场景。<br />
+生产者生产消息时不需要知道队列的名字——它们只是将消息发送到交换器上。 但是消费者需要知道队列的名称。 因此临时队列需要由消费者来创建， 并且由消费者绑定到与生产者约定好的交换器上。</p>
+
+<h2 id="channel-信道">Channel 信道</h2>
+
+<p>由于创建销毁TCP链接是很昂贵的操作， 因此RabbitMQ提出了信道这一概念以复用TCP链接。 一个TCP链接中可以包含多个信道， 每个信道用于生产/消费不同的队列。</p>
+
+<h2 id="vhost-虚拟机">VHost 虚拟机</h2>
+
+<p>RabbitMQ使用vhost 进行资源隔离。 每个vhost内部可以创建独立的交换器，绑定， 队列， 信道， 不同vhost内的各项资源互不可见。 通过为不同用户分配不同vhost的访问权限， 实现用户隔离。</p>
+
+<h2 id="consumer-消费者">Consumer 消费者</h2>
+
+<p>一个从消息队列中取得消息的客户端应用程序。 在RabbitMQ中， 同一个队列可以由多个客户端同时消费。 此时RabbitMQ会按顺序将消息一个个分发给客户端， 每个客户端拿到的数据各不相同， 称为Round-Robin。 因此同一队列中的一条消息只能在全局被消费一次。</p>
+
+<h2 id="消息ack">消息ACK</h2>
+
+<p>当RabbitMQ认为消费者已经成功消费到消息之后， 就会将消息删除。 并且由于其不同客户端遵循Round-Robin机制，  这就意味着如果有一个客户端在拿到消息之后还没来得及处理就挂掉了， 则这条消息也不会被其他客户端处理到。<br />
+为了解决这个问题， RabbitMQ引入了ACK机制并默认开启。 开启此参数意味着只有当客户端收到并处理完了消息， 向服务器发送了ACK之后， 服务器才会将该消息标记为已消费并将其删除。 如果客户端因为种种原因未能响应ACK（如客户端挂掉， 网络超时等因素）， 则服务器会将该消息重新发送给其他消费此队列的客户端。<br />
+&gt; 在使用ack机制时， 客户端一定要在处理完消息之后向服务器发送ACK， 否则服务器永远不知道客户端已经处理过了该消息。 它只能将消息一遍遍地发送到其他客户端上， 并且将数据一直保存在内存中。 随着堆积的消息增多，服务端内存会爆掉。</p>
+
+<h2 id="持久化">持久化</h2>
+
+<p>RabbitMQ 默认不会对消息进行持久化，其将数据存放于内存中, 宕机即会丢数。 如果需要持久化， 则需要创建一个带持久化参数的队列， 并在发送消息时指定持久化参数为True。</p>
+
+<pre><code class="language-python">channel.queue_declare(queue='task_queue', durable=True)
+
+channel.basic_publish(exchange='',
+                      routing_key=&quot;task_queue&quot;,
+                      body=message,
+                      properties=pika.BasicProperties(
+                         delivery_mode = 2, # make message persistent
+                      ))
+</code></pre>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>Violin </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://violinSonata.site/2020/basic-concept-of-rabbitmq/>https://violinSonata.site/2020/basic-concept-of-rabbitmq/</span>
+            </p>
+            
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://violinSonata.site/tags/rabbitmq/">
+                    #RabbitMQ</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://violinSonata.site/">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://violinSonata.site/2020/detail-of-ssl-and-tls/" class="prev" rel="prev" title="SSL/TLS的工作原理"><i class="iconfont icon-left"></i>&nbsp;SSL/TLS的工作原理</a>
+         
+        
+        <a href="https://violinSonata.site/2020/use-private-repo-in-golang/" class="next" rel="next" title="Golang使用私有仓库">Golang使用私有仓库&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2017 - 2020</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+         </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://violinSonata.site/">Violin</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

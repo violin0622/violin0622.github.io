@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="Violin">
+  <meta name="description" content="violin sonata">
+  <meta name="keywords" content="[Hugo blog]">
+  
+  <link rel="prev" href="https://violinSonata.site/2019/lables/" />
+  <link rel="next" href="https://violinSonata.site/2020/useful-operates-in-mysql/" />
+  <link rel="canonical" href="https://violinSonata.site/2019/configmap/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           Kubernetes中的容器配置管理：ConfigMap | Sonata for solo Violin
+       
+  </title>
+  <meta name="title" content="Kubernetes中的容器配置管理：ConfigMap | Sonata for solo Violin">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/violinSonata.site\/"
+    },
+    "articleSection" : "post",
+    "name" : "Kubernetes中的容器配置管理：ConfigMap",
+    "headline" : "Kubernetes中的容器配置管理：ConfigMap",
+    "description" : "什么是ConfigMap ConfigMap ，即配置字典， 是Kubernetes提供的用于管理容器中程序运行所需配置的解决方案。 它是一种持久化的机制， 不会随着",
+    "inLanguage" : "en",
+    "author" : "Violin",
+    "creator" : "Violin",
+    "publisher": "Violin",
+    "accountablePerson" : "Violin",
+    "copyrightHolder" : "Violin",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-09-16 10:51:55 \x2b0800 CST",
+    "dateModified" : "2019-09-16 10:51:55 \x2b0800 CST",
+    "url" : "https:\/\/violinSonata.site\/2019\/configmap\/",
+    "wordCount" : "2477",
+    "keywords" : [ "Kubernetes", "Sonata for solo Violin"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">Kubernetes中的容器配置管理：ConfigMap</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://violinSonata.site/" rel="author">Violin</a> 
+                <span class="post-time">
+                on <time datetime=2019-09-16 itemprop="datePublished">2019-09-16</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://violinSonata.site/categories/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/"> 软件工程 </a>
+                        
+                </span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<h2 id="什么是configmap">什么是ConfigMap</h2>
+
+<p>ConfigMap ，即配置字典， 是Kubernetes提供的用于管理容器中程序运行所需配置的解决方案。 它是一种持久化的机制， 不会随着容器的创建销毁而变化。 容器启动时从ConfigMap中读取配置， 并且多个容器可以共享同一个ConfigMap。</p>
+
+<h2 id="软件配置常见的几种形式">软件配置常见的几种形式:</h2>
+
+<ul>
+<li><p>环境变量<br />
+比如许多运行在Java虚拟机上的程序在启动时会读取<code>JAVA_HOME</code>环境变量， 配置不同的环境变量值， 也就使用了不同的Java虚拟机。<br />
+再比如许多项目会使用环境变量来区分当前环境是<code>product</code>,<code>develop</code>,<code>test</code>。</p></li>
+
+<li><p>配置文件<br />
+配置文件是最普及，最常用的一类配置形式。 无论是服务端程序还是客户端程序， 都会使用这种形式。<br />
+常见的配置文件格式有 <code>*.ini</code>, <code>*.json</code>, <code>*.xml</code>, <code>*.conf</code>, <code>*.yaml</code>, <code>*.toml</code>等。</p></li>
+
+<li><p>命令行参数<br />
+这种形式用于命令行启动的程序， 并且常常会和配置文件，环境变量等形式搭配使用。 其优点在于灵活， 可以方便地对每次程序运行时指定不同的配置项， 因此很适合执行时间较短的程序， 例如压缩解压， 缺点在于总是会让整条命令变得又长又臭。</p></li>
+
+<li><p>远程配置中心<br />
+随着微服务架构的盛行， 配置不再需要存储在本地了， 程序启动之后会到远程的服务去读取配置， 用户启动时只需要“告诉”程序去哪里读取配置。  这种配置方式极大地简化了本地部署的步骤， 适用于在多台服务器上大量部署的程序， 是未来的发展趋势。</p></li>
+
+<li><p>插件<br />
+严格来说， 插件并不能算是一种配置形式。 因为它不像其他几种形式， 必须在程序刚刚启动时读取， 也不像其他几种形式， 通过用户编辑其内容来改变程序的行为。 插件更多的是在程序运行时根据需要或配置进行加载， 用以扩充程序的功能。</p></li>
+</ul>
+
+<h2 id="创建配置字典的几种形式">创建配置字典的几种形式</h2>
+
+<p>配置字典是一个键值对形式Map。 键是由用户随意指定的， 而值才是Pod中的进程期望读取的配置。 很多应用的配置格式本身就是键值对形式的， 比如Java提供的<code>*.properties</code>文件就是键值对的列表。 在使用配置文件时应该将这个文件的内容整个作为配置字典中的<code>值</code>, 而不是每个配置文件中的键值对对应一个配置字典中的键值对。</p>
+
+<h3 id="在命令行直接通过键值对创建">在命令行直接通过键值对创建</h3>
+
+<p>可以直接在命令行中指定键值对， 每个键值对都是一项配置。 就像这样:</p>
+
+<pre><code class="language-sh">  kubectl create configmap My-Config 
+      --from-literal=key1=value1 
+      --from-literal=loglevel='INFO, stdout' 
+      --from-literal=java_home_env=/usr/lib/jre_1.8.0
+</code></pre>
+
+<h3 id="通过单个配置文件创建">通过单个配置文件创建</h3>
+
+<p>也可以将一个本地的配置文件上传形成一个配置字典。 指定文件可以使用绝对路径， 也可以使用相对路径。<br />
+  <code>--from-file</code>参数的key是可选的， 如果不指定的话， 默认使用文件名作为key。</p>
+
+<pre><code class="language-sh">  kubectl create configmap My-File-Config 
+    --from-file=/home/app/config.properties 
+    --from-file=config=/home/app/config.properties
+</code></pre>
+
+<h3 id="通过目录创建">通过目录创建</h3>
+
+<p>很多应用都会同时使用多个配置文件， 而这些配置文件常常在同一个目录下。 因此当然也可以把一整个目录都创建成配置字典。<br />
+  &gt; 从目录创建配置字典实际上是针对目录内的每个文件， 创建以文件名为key的配置项。 因此这种用法有两个注意点：<br />
+  &gt; 1. 可以在一个配置字典中指定多个目录， 但是要保证所有这些目录中不能存在重名的文件。<br />
+  &gt; 2. 不能指定key, 此时key只能是文件名。</p>
+
+<pre><code class="language-sh">  kubectl create configmap My-Dir-Config 
+    --from-file=/home/app 
+    --from-file=config=/home/anothor
+</code></pre>
+
+<h3 id="通过二进制文件创建">通过二进制文件创建</h3>
+
+<p>二进制文件同样也可以用来创建配置字典。 不过并不是直接存储在配置字典中， 而是先对文件进行base64编码， 再把编码后的字符串存储在配置字典中。<br />
+  这是一种非常规用法， 一般不推荐。 如果文件太大的话， 会对k8s集群内的etcd造成压力。 另外上传时还可能会因为超时而中断请求。 仅适用于个别奇葩应用使用非文本形式的配置文件，或者一些程序会使用<code>.so</code>或<code>.dill</code>文件作为插件时使用。</p>
+
+<pre><code class="language-sh">  kubectl create configmap My-Binary-Config 
+    --from-file=/home/app/config.tar 
+    --from-file=/home/app/plugin.so
+</code></pre>
+
+<h3 id="使用命令行创建配置字典的缺陷">使用命令行创建配置字典的缺陷</h3>
+
+<p>使用命令行直接创建配置字典的优点是方便直接。 但是缺点也有：
+  - 除非使用 &ndash;namespace 指定， 或者.kube/config文件中指定了命名空间， 否则该配置字典会在default命名空间内。<br />
+  - 能够指定配置字典的名称， 但是不能指定配置字典的Label(当然可以在创建之后再用 kubectl lable命令添加)。<br />
+  - 对于大量的配置， 使用命令行显然不方便。 好在&ndash;from-file选项弥补了这一点。<br />
+  - 这是前面说到的&rdquo;又长又臭的命令&rdquo;的完美诠释。</p>
+
+<p>如果想要添加配置字典的Label， 需要两条命令。 首先创建一个配置字典， 然后使用</p>
+
+<pre><code class="language-sh">  kubectl lable configmap My-ConfigMap key=value key2=value2
+</code></pre>
+
+<h3 id="使用yaml文件创建配置字典">使用yaml文件创建配置字典</h3>
+
+<p>其实就是把想要配置的内容一股脑写到<code>data</code>字段下面就好啦。 示例：</p>
+
+<pre><code class="language-yaml">apiVersion:  v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: flume
+  namespace: flume-namespace
+  name: flume-config
+data:
+  flume.properties: |
+    agent.sources = a1
+    agent.channels = a1
+    agent.sinks = a1
+  log4j.properties: |
+    flume.root.logger=INFO,console
+    log4j.rootLogger=${flume.root.logger}
+  java_home_env:
+    /usr/lib/jre_1.8.0
+</code></pre>
+
+<p>事实上， 当想要在命令行查看已创建的配置字典内容， 使用<code>kubectl get config flume-config -o yaml</code>时， 看到的也是上面的形式。</p>
+
+<h2 id="在pod内使用configmap的几种方式">在Pod内使用ConfigMap的几种方式</h2>
+
+<h3 id="用于容器内的环境变量">用于容器内的环境变量</h3>
+
+<pre><code class="language-yaml">apiVersion: v1
+kind: Pod
+metadata:
+  name: java
+spec:
+  containers:
+  - name: test-container
+    image: alpine
+    command: [ &quot;/bin/sh&quot;, &quot;-c&quot;, &quot;echo $JAVA_HOME&quot; ]
+    env:
+    - name: JAVA_HOME
+      valueFrom:
+        configMapKeyRef:
+          name: My-Config
+          key: java_home_env
+</code></pre>
+
+<h3 id="用于容器内的目录">用于容器内的目录</h3>
+
+<pre><code class="language-yaml">apiVersion: v1
+kind: Pod
+metadata:
+  name: dapi-test-pod
+spec:
+  containers:
+    - name: test-container
+      image: k8s.gcr.io/busybox
+      command: [ &quot;/bin/sh&quot;, &quot;-c&quot;, &quot;ls /etc/config/&quot; ]
+      volumeMounts:
+      - name: configDir
+        mountPath: /etc/config
+  volumes:
+    - name: configDir
+      configMap:
+        # Provide the name of the ConfigMap containing the files you want
+        # to add to the container
+        name: My-Dir-ConfigMap
+</code></pre>
+
+<h3 id="用于容器内的文件">用于容器内的文件</h3>
+
+<p>要注意， 当使用配置字典作为容器内的配置文件时， 会将目标目录整个覆盖， 只保留配置字典中存在的&rdquo;key&rdquo;, 也就是对应的配置文件。<br />
+这样造成的后果就是不能够仅更新某个目录下面的单个文件。 例如如果想要用配置字典更新 <code>/etc/hosts</code>文件， 那么会导致 <code>/etc</code> 目录下的其他文件都被抹除。 因此使用时一定要小心。</p>
+
+<pre><code class="language-yaml">apiVersion: v1
+kind: Pod
+metadata:
+  name: dapi-test-pod
+spec:
+  containers:
+  - name: test-container
+    image: k8s.gcr.io/busybox
+    command: [ &quot;/bin/sh&quot;,&quot;-c&quot;,&quot;cat /etc/config/keys&quot; ]
+    volumeMounts:
+    - name: config-volume
+      mountPath: /etc/config
+  volumes:
+  - name: config-volume
+    configMap:
+      name: special-config
+      items:
+      - key: SPECIAL_LEVEL
+        path: keys
+</code></pre>
+
+<h3 id="用于容器内的命令行">用于容器内的命令行</h3>
+
+<p>配置字典对于命令行形式的配置没有直接的支持， 不过可以通过设置环境变量， 然后在命令行中使用环境变量来间接地实现。</p>
+
+<h3 id="用于容器内的插件">用于容器内的插件</h3>
+
+<p>配置字典用作容器内的文件时， 会将base64编码还原， 因此容器内进程看到的是一个完整的二进制文件， 而不是奇怪的编码。</p>
+
+<h2 id="配置字典的更新">配置字典的更新</h2>
+
+<p>当Pod已经运行， 此时再更新其挂载的配置字典， 那么容器内是否能够感知到配置的变更呢？ 这要取决于Pod使用配置字典的方式：
+1. 如果是使用配置文件或者配置目录的形式， 那么当k8s集群的配置字典更新， 容器内挂载的文件也会同步更新。 因此对于一些能够监听配置文件变更并自动加载新配置的程序(如Apache Flume)来说， 不需要重启Pod就可以立刻应用新的配置。<br />
+2. 如果是使用命令行参数或环境变量的方式进行配置的， 由于环境变量是在创建容器的时候指定的， 因此无法随着配置字典的变更而变更。</p>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>Violin </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://violinSonata.site/2019/configmap/>https://violinSonata.site/2019/configmap/</span>
+            </p>
+            
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://violinSonata.site/tags/kubernetes/">
+                    #Kubernetes</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://violinSonata.site/">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://violinSonata.site/2019/lables/" class="prev" rel="prev" title="管理Kubernetes中的对象"><i class="iconfont icon-left"></i>&nbsp;管理Kubernetes中的对象</a>
+         
+        
+        <a href="https://violinSonata.site/2020/useful-operates-in-mysql/" class="next" rel="next" title="MySQL常用操作">MySQL常用操作&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2017 - 2020</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+         </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://violinSonata.site/">Violin</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

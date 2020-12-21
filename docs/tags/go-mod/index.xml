@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>go mod on Sonata for solo Violin</title>
+    <link>https://violinSonata.site/tags/go-mod/</link>
+    <description>Recent content in go mod on Sonata for solo Violin</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 31 Aug 2020 14:51:20 +0800</lastBuildDate>
+    
+	<atom:link href="https://violinSonata.site/tags/go-mod/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Golang使用私有仓库</title>
+      <link>https://violinSonata.site/2020/use-private-repo-in-golang/</link>
+      <pubDate>Mon, 31 Aug 2020 14:51:20 +0800</pubDate>
+      
+      <guid>https://violinSonata.site/2020/use-private-repo-in-golang/</guid>
+      <description>本文基于go 1.13即以上进行演示。 将go代码推送到私有仓库之后， 如果想要在其他项目引用， 需要做以下设置。 设置go env # 设置代理， 多个用逗号分</description>
+    </item>
+    
+  </channel>
+</rss>

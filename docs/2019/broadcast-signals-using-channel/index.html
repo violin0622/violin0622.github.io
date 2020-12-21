@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="Violin">
+  <meta name="description" content="violin sonata">
+  <meta name="keywords" content="[Hugo blog]">
+  
+  <link rel="prev" href="https://violinSonata.site/2019/disadvance-on-even/" />
+  <link rel="next" href="https://violinSonata.site/2019/concurrency-model/" />
+  <link rel="canonical" href="https://violinSonata.site/2019/broadcast-signals-using-channel/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           通过channel模拟信号 | Sonata for solo Violin
+       
+  </title>
+  <meta name="title" content="通过channel模拟信号 | Sonata for solo Violin">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/violinSonata.site\/"
+    },
+    "articleSection" : "post",
+    "name" : "通过channel模拟信号",
+    "headline" : "通过channel模拟信号",
+    "description" : "众所周知，在Golang中创建多个goroutine后，可以使用sync.WaitGroup来等待多个协程全部完成。 那么是否有一种方法，不使",
+    "inLanguage" : "en",
+    "author" : "Violin",
+    "creator" : "Violin",
+    "publisher": "Violin",
+    "accountablePerson" : "Violin",
+    "copyrightHolder" : "Violin",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-01-29 12:52:36 \x2b0800 CST",
+    "dateModified" : "2019-01-29 12:52:36 \x2b0800 CST",
+    "url" : "https:\/\/violinSonata.site\/2019\/broadcast-signals-using-channel\/",
+    "wordCount" : "802",
+    "keywords" : [ "Golang", "Sonata for solo Violin"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">通过channel模拟信号</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://violinSonata.site/" rel="author">Violin</a> 
+                <span class="post-time">
+                on <time datetime=2019-01-29 itemprop="datePublished">2019-01-29</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://violinSonata.site/categories/%E7%BC%96%E7%A8%8B/"> 编程 </a>
+                        <a href="https://violinSonata.site/categories/golang/"> Golang </a>
+                        
+                </span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          <p>众所周知，在Golang中创建多个goroutine后，可以使用<code>sync.WaitGroup</code>来等待多个协程全部完成。<br />
+那么是否有一种方法，不使用这个组件也能完成相同的功能呢？<br />
+有，那就是使用无缓存的<code>channel</code>。</p>
+
+<p><code>channel</code>有一个特点就是，当关闭之后，不能再向内写入数据，否则会造成panic,但是依然可以从中读出数据，此时读出的数据是<code>channel</code>类型的默认值。比如<code>chan int</code>读出的就是0， <code>chan bool</code> 读出的就是false。</p>
+
+<pre><code class="language-go">func main(){
+    chInt := make(chan int)
+    chBool := make(chan bool)
+    close(chInt)
+    close(chBool)
+    fmt.Println(&lt;-chInt, &lt;-chBool)
+}
+</code></pre>
+
+<p>运行结果
+&gt; 0 false</p>
+
+<!-- more -->
+
+<p>注意，如果声明的是有缓存的channel，那么关闭之后会首先读出缓存里面的数据，然后才是该类型的默认值</p>
+
+<pre><code class="language-go">func main(){
+    chInt := make(chan int, 5)
+    chInt &lt;- 1
+    chInt &lt;- 2
+    close(chInt)
+    fmt.Println(&lt;-chInt, &lt;-chInt, &lt;-chInt)
+}
+</code></pre>
+
+<p>运行结果:
+&gt; 1 2 0</p>
+
+<p>既然如此，那么我们可以想到使用无缓存的<code>channel</code>来同步地控制多个协程共同启动：</p>
+
+<pre><code class="language-go">func main(){
+    start := make(chan int)
+    
+    for i:=0; i&lt;10; i++{
+        go func(){
+            &lt;-start:
+                fmt.Println(&quot;do something concurrently !&quot;)
+        }()
+    }
+    
+    close(start)
+    time.Sleep(time.Second)
+}
+</code></pre>
+
+<p>运行结果，多个协程是共同启动的:
+&gt; do something concurrently !<br />
+do something concurrently !<br />
+do something concurrently !<br />
+do something concurrently !<br />
+do something concurrently !<br />
+do something concurrently !<br />
+do something concurrently !<br />
+do something concurrently !<br />
+do something concurrently !<br />
+do something concurrently !<br />
+&gt;</p>
+
+<p>当然，并不只是启动信号，也可以利用这个特性发送任何你想要广播的信号，比如休眠，退出，等等。<br />
+另外，这个channel也可以用来作数据传输。那么如何区分读出来的是数据还是关闭信号呢？ 答案是在读出的时候判断一下第二个返回值。</p>
+
+<pre><code class="language-go">func main(){
+   ch := make(chan int)
+    for i:=0; i&lt;10; i++{
+        go func(){
+            for{
+                select{
+                case n, ok:=&lt;-ch:
+                    if ok{
+                        fmt.Println(&quot;data&quot;, n)
+                    }else{
+                        fmt.Println(&quot;signal&quot;,n)
+                        return
+                    }
+                }
+            }
+        }()
+    }
+    
+    ch&lt;-0
+    ch&lt;-1
+    ch&lt;-2
+    time.Sleep(time.Second)
+}
+</code></pre>
+
+<p>运行结果，打印顺序是乱序的，但可以看到协程能够区分“信号”和“数据” 的区别：
+&gt; data 0<br />
+signal 0<br />
+signal 0<br />
+signal 0<br />
+signal 0<br />
+signal 0<br />
+data 1<br />
+signal 0<br />
+signal 0<br />
+data 2<br />
+signal 0<br />
+signal 0<br />
+signal 0<br />
+&gt;</p>
+
+<p><br/></p>
+
+<p>当然，这个特性也并不是万能的，主要的缺陷在于，
+- 只能发送一个特定的信号。如果想要发送多个信号，需要使用多个<code>channel</code>。
+- 只能以类似广播的方式发送信号，一次close，所有监听的goroutine都会响应。<br />
+  例如，你创建了十个阻塞的goroutine,而只想启动其中的三个（无论是特定的三个还是任意三个），这是无法实现的。</p>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>Violin </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://violinSonata.site/2019/broadcast-signals-using-channel/>https://violinSonata.site/2019/broadcast-signals-using-channel/</span>
+            </p>
+            
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://violinSonata.site/tags/golang/">
+                    #Golang</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://violinSonata.site/">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://violinSonata.site/2019/disadvance-on-even/" class="prev" rel="prev" title="Even主题的小吐槽"><i class="iconfont icon-left"></i>&nbsp;Even主题的小吐槽</a>
+         
+        
+        <a href="https://violinSonata.site/2019/concurrency-model/" class="next" rel="next" title="&lt;译&gt;并发模型">&lt;译&gt;并发模型&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2017 - 2020</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+         </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://violinSonata.site/">Violin</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

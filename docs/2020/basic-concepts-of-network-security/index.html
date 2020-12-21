@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="Violin">
+  <meta name="description" content="violin sonata">
+  <meta name="keywords" content="[Hugo blog]">
+  
+  <link rel="prev" href="https://violinSonata.site/2020/access-host-network-in-docker/" />
+  <link rel="next" href="https://violinSonata.site/2020/create-daemon-process-in-golang/" />
+  <link rel="canonical" href="https://violinSonata.site/2020/basic-concepts-of-network-security/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           网络安全基本概念 | Sonata for solo Violin
+       
+  </title>
+  <meta name="title" content="网络安全基本概念 | Sonata for solo Violin">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/violinSonata.site\/"
+    },
+    "articleSection" : "post",
+    "name" : "网络安全基本概念",
+    "headline" : "网络安全基本概念",
+    "description" : "对称加密 对称加密很简单， 就是消息传递的双方共享同一个密码。 消息发送人用密码对消息进行加密， 然后将密文发给给消息接收人， 消息接受人使用此密码对",
+    "inLanguage" : "en",
+    "author" : "Violin",
+    "creator" : "Violin",
+    "publisher": "Violin",
+    "accountablePerson" : "Violin",
+    "copyrightHolder" : "Violin",
+    "copyrightYear" : "2020",
+    "datePublished": "2020-08-12 16:30:09 \x2b0800 CST",
+    "dateModified" : "2020-08-12 16:30:09 \x2b0800 CST",
+    "url" : "https:\/\/violinSonata.site\/2020\/basic-concepts-of-network-security\/",
+    "wordCount" : "1058",
+    "keywords" : [ "Security", "Sonata for solo Violin"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">网络安全基本概念</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://violinSonata.site/" rel="author">Violin</a> 
+                <span class="post-time">
+                on <time datetime=2020-08-12 itemprop="datePublished">2020-08-12</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://violinSonata.site/categories/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/"> 软件工程 </a>
+                        
+                </span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<h2 id="对称加密">对称加密</h2>
+
+<p>对称加密很简单， 就是消息传递的双方共享同一个密码。 消息发送人用密码对消息进行加密， 然后将密文发给给消息接收人， 消息接受人使用此密码对密文进行解密， 然后阅读。<br />
+优点： 计算量小， 加密效率高。<br />
+缺点： 密码安全系数并不是特别高 （知道密码的人比较多）。</p>
+
+<h2 id="非对称加密">非对称加密</h2>
+
+<p>非对称加密是指消息传递双发使用不同的密码， 两个密码分别被称为私钥和公钥。 私钥和公钥之间具备一定的数学关系： 私钥加密的内容只有对应的公钥才能解密， 公钥加密的内容只有对应的私钥才能解密。<br />
+需要使用此加密方式的人会具备私钥和公钥， 私钥只有自己知道， 公钥则对特定群体或者所有人公开。<br />
+优点： 安全， 私钥只有自己一个人知道， 不用担心被窃听。<br />
+缺点： 计算量较大， 效率低， 不适合对大量内容进行加密。</p>
+
+<h2 id="消息摘要-简称摘要">消息摘要(简称摘要)</h2>
+
+<p>使用单向哈希算法， 以任意长度的报文计算得到的固定长度的哈希值。 所谓单向是指改算法是不可逆的， 根据消息摘要无法计算出输入报文。<br />
+消息摘要的另一个特点是： 对输入报文的任何改动， 都会导致最终的计算结果 （也就是消息摘要本身） 发生巨大的变化。 因此，消息摘要可以认为是数字信息的指纹。<br />
+&gt; 常见的消息摘要算法有SHA， MD5等。</p>
+
+<h2 id="数字签名-简称签名">数字签名(简称签名)</h2>
+
+<p>数字签名与在纸上的物理签名效果类似——保证消息的真实性与不可伪造。 签名过程通常是消息的发送方首先生成消息报文的消息摘要， 然后使用自己的私钥对消息摘要进行加密， 加密之后的消息摘要就是消息报文的签名， 将和消息报文一起发送给消息接收方。<br />
+如果消息接受方需要验证真伪， 首先使用消息发送方的公钥对数字签名进行解密从而得到报文消息摘要 （如果解密失败，则签名肯定有问题）。 然后使用相同的消息摘要算法重新计算接受到的消息报文的消息摘要， 如果计算得到的消息摘要与解密得到的消息摘要不一致， 则消息报文被人篡改。</p>
+
+<h2 id="数字证书-简称证书">数字证书(简称证书)</h2>
+
+<p>数字证书类似网上身份证， 由第三方权威机构签发， 用于鉴别证书持有人的身份的真实性。 数字证书上包含了证书持有人的基本信息 （如：网站域名、 邮箱地址等）、 证书持有人的公钥、 证书颁发机构信息、 证书颁发机构的数字签名以及证书有效期。<br />
+数字证书的申请过程通常是： 证书申请人向证书签发机构提交申请， 申请中包含申请人身份的基本信息以及申请人公钥。 证书签发机构通过各种手段核实申请来源以及申请信息的真实性。 核实通过之后， 真实签发机构向申请人签发数字证书。<br />
+证书签发机构也有一个证书， 其中包含了证书签发机构的公钥。 任何人都可以获得该证书， 并使用此证书来验证该机构签发的所有证书的真伪。 默认情况下， 大多数操作系统内已经内置了全球知名证书签发单位的根证书。</p>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>Violin </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://violinSonata.site/2020/basic-concepts-of-network-security/>https://violinSonata.site/2020/basic-concepts-of-network-security/</span>
+            </p>
+            
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://violinSonata.site/tags/security/">
+                    #Security</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://violinSonata.site/">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://violinSonata.site/2020/access-host-network-in-docker/" class="prev" rel="prev" title="Docker容器中访问宿主机网络"><i class="iconfont icon-left"></i>&nbsp;Docker容器中访问宿主机网络</a>
+         
+        
+        <a href="https://violinSonata.site/2020/create-daemon-process-in-golang/" class="next" rel="next" title="使用Golang创建守护进程">使用Golang创建守护进程&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2017 - 2020</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+         </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://violinSonata.site/">Violin</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

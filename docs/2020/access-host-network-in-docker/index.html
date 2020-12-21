@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="Violin">
+  <meta name="description" content="violin sonata">
+  <meta name="keywords" content="[Hugo blog]">
+  
+  <link rel="prev" href="https://violinSonata.site/2020/useful-operates-in-mysql/" />
+  <link rel="next" href="https://violinSonata.site/2020/basic-concepts-of-network-security/" />
+  <link rel="canonical" href="https://violinSonata.site/2020/access-host-network-in-docker/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           Docker容器中访问宿主机网络 | Sonata for solo Violin
+       
+  </title>
+  <meta name="title" content="Docker容器中访问宿主机网络 | Sonata for solo Violin">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/violinSonata.site\/"
+    },
+    "articleSection" : "post",
+    "name" : "Docker容器中访问宿主机网络",
+    "headline" : "Docker容器中访问宿主机网络",
+    "description" : "Docker容器监听宿主机端口 使用端口映射 现在假设有一个Docker容器nginx， 它运行时将监听docker内的80端口， 此时宿主机的80",
+    "inLanguage" : "en",
+    "author" : "Violin",
+    "creator" : "Violin",
+    "publisher": "Violin",
+    "accountablePerson" : "Violin",
+    "copyrightHolder" : "Violin",
+    "copyrightYear" : "2020",
+    "datePublished": "2020-04-08 14:41:12 \x2b0800 CST",
+    "dateModified" : "2020-04-08 14:41:12 \x2b0800 CST",
+    "url" : "https:\/\/violinSonata.site\/2020\/access-host-network-in-docker\/",
+    "wordCount" : "767",
+    "keywords" : [ "docker", "Sonata for solo Violin"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://violinSonata.site/">Sonata for solo Violin</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/post/" title="">Post</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">Docker容器中访问宿主机网络</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://violinSonata.site/" rel="author">Violin</a> 
+                <span class="post-time">
+                on <time datetime=2020-04-08 itemprop="datePublished">2020-04-08</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://violinSonata.site/categories/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/"> 软件工程 </a>
+                        
+                </span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<h2 id="docker容器监听宿主机端口">Docker容器监听宿主机端口</h2>
+
+<h3 id="使用端口映射">使用端口映射</h3>
+
+<p>现在假设有一个Docker容器nginx， 它运行时将监听docker内的80端口， 此时宿主机的80端口并没有被占用， 也无法将请求传入容器中。<br />
+如果需要容器监听宿主机的80端口， 那么需要在启动容器时进行端口映射。</p>
+
+<pre><code class="language-sh"># 由于映射了宿主机的80和443端口， 低于1024， 因此需要使用root用户启动docker. 
+docker run -d \
+    --name nginx \
+    -p 80:80 -p 443:443 \
+    nginx:latest
+</code></pre>
+
+<p><code>-p</code>选项接收<code>{宿主机端口}:{容器端口}</code>格式的参数， 可以多次指定以指定多个端口映射。</p>
+
+<h3 id="使用host网络模式">使用host网络模式</h3>
+
+<p>Docker容器启动时有<code>host</code>, <code>bridge</code>, <code>none</code> 三种网络模式， 默认是使用<code>bridge</code>桥接模式， 这种模式下可以使用端口映射的方式监听宿主机端口。
+不过也可以使用<code>--network</code>选项指定<code>host</code>模式， 这种模式下容器与宿主机共享网络， 因此可以直接监听与请求宿主机上的网络端口。</p>
+
+<pre><code class="language-sh"># 使用host模式可以直接监听宿主机网络端口，不必使用-p进行端口映射。 
+docker run -d \
+    --network host \
+    --name nginx-docker \
+    nginx:latest
+
+# 也可以直接访问宿主机端口。  
+docker run --rm \
+    --network host \
+    --name curl-docker \
+    alpine curl localhost:80 
+</code></pre>
+
+<h2 id="docker容器访问宿主机端口">Docker容器访问宿主机端口</h2>
+
+<p>从Docker容器中访问宿主机的端口有两种方式</p>
+
+<h3 id="指定宿主机ip-linux">指定宿主机IP (Linux)</h3>
+
+<p>在安装Docker的时候，会在宿主机安装一个虚拟网卡docker0, docker0对应的地址就是容器访问宿主机的地址。</p>
+
+<pre><code class="language-sh">$ ip addr show docker0
+4: docker0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default
+    link/ether 02:42:73:74:56:03 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::42:73ff:fe74:5603/64 scope link
+       valid_lft forever preferred_lft forever
+</code></pre>
+
+<p>可以看到docker0对应的地址为 <code>172.17.0.1</code>, 那么启动docker时可以这样:</p>
+
+<pre><code class="language-sh">docker run --rm \
+    --name curl-docker \
+    alpine curl 172.17.0.1:80
+</code></pre>
+
+<h3 id="指定宿主机ip-mac">指定宿主机IP (mac)</h3>
+
+<p>macOS的情况与Linux系统不同， Docker原生不支持macOS， mac上安装的Docker程序实质上是一个带着Docker的Linux虚拟机,  因此macOS上不会有 docker0 网卡。<br />
+不过这种情况也有专门的解决方案， 那就是使用特殊的地址 <code>docker.for.mac.localhost</code> 代替。</p>
+
+<pre><code class="language-sh">docker run --rm \
+    --name curl-docker \
+    alpine curl docker.for.mac.localhost:80
+</code></pre>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>Violin </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://violinSonata.site/2020/access-host-network-in-docker/>https://violinSonata.site/2020/access-host-network-in-docker/</span>
+            </p>
+            
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://violinSonata.site/tags/docker/">
+                    #docker</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://violinSonata.site/">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://violinSonata.site/2020/useful-operates-in-mysql/" class="prev" rel="prev" title="MySQL常用操作"><i class="iconfont icon-left"></i>&nbsp;MySQL常用操作</a>
+         
+        
+        <a href="https://violinSonata.site/2020/basic-concepts-of-network-security/" class="next" rel="next" title="网络安全基本概念">网络安全基本概念&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2017 - 2020</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+         </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://violinSonata.site/">Violin</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

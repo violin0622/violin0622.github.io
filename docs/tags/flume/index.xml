@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Flume on Sonata for solo Violin</title>
+    <link>https://violinSonata.site/tags/flume/</link>
+    <description>Recent content in Flume on Sonata for solo Violin</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 24 Mar 2019 16:24:47 +0800</lastBuildDate>
+    
+	<atom:link href="https://violinSonata.site/tags/flume/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Flume: 日志收集、聚合、归档工具</title>
+      <link>https://violinSonata.site/2019/flume/</link>
+      <pubDate>Sun, 24 Mar 2019 16:24:47 +0800</pubDate>
+      
+      <guid>https://violinSonata.site/2019/flume/</guid>
+      <description>在大数据时代， 计算机技术已经不是阻碍各大互联网公司发展的壁垒——在开源浪潮下， 所有的技术都是共享的。 甚至初创公司的技术栈会比大公司的更新更先</description>
+    </item>
+    
+  </channel>
+</rss>

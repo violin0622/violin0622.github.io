@@ -1,0 +1,3 @@
+#!/bin/sh
+
+hugo && rsync -avz --delete public/ 47.94.15.105:~/blog
