@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Python on Sonata for solo Violin</title>
-    <link>/violinsonata.site/categories/python/</link>
+    <link>//violinsonata.site/categories/python/</link>
     <description>Recent content in Python on Sonata for solo Violin</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Sun, 27 Jan 2019 23:39:34 +0800</lastBuildDate>
     
-	<atom:link href="/violinsonata.site/categories/python/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="//violinsonata.site/categories/python/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Python虚拟环境指南</title>
-      <link>/violinsonata.site/2019/virtualenvwrapper/</link>
+      <link>//violinsonata.site/2019/virtualenvwrapper/</link>
       <pubDate>Sun, 27 Jan 2019 23:39:34 +0800</pubDate>
       
-      <guid>/violinsonata.site/2019/virtualenvwrapper/</guid>
+      <guid>//violinsonata.site/2019/virtualenvwrapper/</guid>
       <description>&lt;h2 id=&#34;安装-virtualenv&#34;&gt;安装&lt;code&gt;virtualenv&lt;/code&gt;:&lt;/h2&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$pip install virtualenv

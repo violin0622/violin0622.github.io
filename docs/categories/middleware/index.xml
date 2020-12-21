@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>middleware on Sonata for solo Violin</title>
-    <link>/violinsonata.site/categories/middleware/</link>
-    <description>Recent content in middleware on Sonata for solo Violin</description>
+    <title>Middleware on Sonata for solo Violin</title>
+    <link>//violinsonata.site/categories/middleware/</link>
+    <description>Recent content in Middleware on Sonata for solo Violin</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Mon, 24 Aug 2020 15:25:07 +0800</lastBuildDate>
     
-	<atom:link href="/violinsonata.site/categories/middleware/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="//violinsonata.site/categories/middleware/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Basic Concept of Rabbitmq</title>
-      <link>/violinsonata.site/2020/basic-concept-of-rabbitmq/</link>
+      <link>//violinsonata.site/2020/basic-concept-of-rabbitmq/</link>
       <pubDate>Mon, 24 Aug 2020 15:25:07 +0800</pubDate>
       
-      <guid>/violinsonata.site/2020/basic-concept-of-rabbitmq/</guid>
+      <guid>//violinsonata.site/2020/basic-concept-of-rabbitmq/</guid>
       <description>Message 消息 消息，消息是不具名的，它由消息头和消息体组成。消息体是不透明的，而消息头则由一系列的可选属性组成，这些属性包括routing-key（</description>
     </item>
     
     <item>
       <title>MySQL常用操作</title>
-      <link>/violinsonata.site/2020/useful-operates-in-mysql/</link>
+      <link>//violinsonata.site/2020/useful-operates-in-mysql/</link>
       <pubDate>Wed, 19 Feb 2020 15:14:38 +0800</pubDate>
       
-      <guid>/violinsonata.site/2020/useful-operates-in-mysql/</guid>
+      <guid>//violinsonata.site/2020/useful-operates-in-mysql/</guid>
       <description>数据库概念关系 服务器 -&amp;gt; 实例 -&amp;gt; 数据库 -&amp;gt; 表 -&amp;gt; 记录 登录数据库实例 mysql \ -u{用户名} \ #如果不指定-u， 则使用 root 用户。 -p{密码} \ #如果指定-p而</description>
     </item>
     
     <item>
       <title>Flume: 日志收集、聚合、归档工具</title>
-      <link>/violinsonata.site/2019/flume/</link>
+      <link>//violinsonata.site/2019/flume/</link>
       <pubDate>Sun, 24 Mar 2019 16:24:47 +0800</pubDate>
       
-      <guid>/violinsonata.site/2019/flume/</guid>
+      <guid>//violinsonata.site/2019/flume/</guid>
       <description>在大数据时代， 计算机技术已经不是阻碍各大互联网公司发展的壁垒——在开源浪潮下， 所有的技术都是共享的。 甚至初创公司的技术栈会比大公司的更新更先</description>
     </item>
     

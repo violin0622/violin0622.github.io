@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>gRPC on Sonata for solo Violin</title>
-    <link>/violinsonata.site/tags/grpc/</link>
+    <link>//violinsonata.site/tags/grpc/</link>
     <description>Recent content in gRPC on Sonata for solo Violin</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Fri, 04 Sep 2020 15:05:10 +0800</lastBuildDate>
     
-	<atom:link href="/violinsonata.site/tags/grpc/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="//violinsonata.site/tags/grpc/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Golang使用gRPC指南</title>
-      <link>/violinsonata.site/2020/use-grpc-in-golang/</link>
+      <link>//violinsonata.site/2020/use-grpc-in-golang/</link>
       <pubDate>Fri, 04 Sep 2020 15:05:10 +0800</pubDate>
       
-      <guid>/violinsonata.site/2020/use-grpc-in-golang/</guid>
+      <guid>//violinsonata.site/2020/use-grpc-in-golang/</guid>
       <description>本文以一个简单的CURD服务为例演示了如果一步步使用grpc的接口. 使用protobuf 编写proto文件 proto文件是定义整个proto</description>
     </item>
     
