@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>随想杂谈 on Sonata for solo Violin</title>
-    <link>https://violinSonata.site/categories/%E9%9A%8F%E6%83%B3%E6%9D%82%E8%B0%88/</link>
+    <link>https://violinsonata.site/categories/%E9%9A%8F%E6%83%B3%E6%9D%82%E8%B0%88/</link>
     <description>Recent content in 随想杂谈 on Sonata for solo Violin</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Mon, 28 Jan 2019 13:40:16 +0800</lastBuildDate>
     
-	<atom:link href="https://violinSonata.site/categories/%E9%9A%8F%E6%83%B3%E6%9D%82%E8%B0%88/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://violinsonata.site/categories/%E9%9A%8F%E6%83%B3%E6%9D%82%E8%B0%88/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Even主题的小吐槽</title>
-      <link>https://violinSonata.site/2019/disadvance-on-even/</link>
+      <link>https://violinsonata.site/2019/disadvance-on-even/</link>
       <pubDate>Mon, 28 Jan 2019 13:40:16 +0800</pubDate>
       
-      <guid>https://violinSonata.site/2019/disadvance-on-even/</guid>
+      <guid>https://violinsonata.site/2019/disadvance-on-even/</guid>
       <description>&lt;p&gt;搭建博客时横向对比了几个喜欢的Hexo主题，最终选定了&lt;a href=&#34;https://github.com/ahonn/hexo-theme-even&#34;&gt;Even&lt;/a&gt; 。&lt;br /&gt;
 不过依然对&lt;code&gt;Even&lt;/code&gt;有几个不太满意的地方，在这里记录下来，日后有时间就自己修改一下。&lt;/p&gt;
 

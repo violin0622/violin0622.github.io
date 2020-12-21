@@ -1,9 +1,8 @@
-baseURL: https://violinSonata.site/
+baseURL: https://violinsonata.site/
 theme: LeaveIt
 title: Sonata for solo Violin
 copyright: ''
 paginate: 12
-
 publishDir: docs
 defaultContentLanguage: en
 disqusShortname: ''

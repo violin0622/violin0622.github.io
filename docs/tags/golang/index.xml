@@ -2,39 +2,39 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Golang on Sonata for solo Violin</title>
-    <link>https://violinSonata.site/tags/golang/</link>
+    <link>https://violinsonata.site/tags/golang/</link>
     <description>Recent content in Golang on Sonata for solo Violin</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Fri, 04 Sep 2020 15:05:10 +0800</lastBuildDate>
     
-	<atom:link href="https://violinSonata.site/tags/golang/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://violinsonata.site/tags/golang/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Golang使用gRPC指南</title>
-      <link>https://violinSonata.site/2020/use-grpc-in-golang/</link>
+      <link>https://violinsonata.site/2020/use-grpc-in-golang/</link>
       <pubDate>Fri, 04 Sep 2020 15:05:10 +0800</pubDate>
       
-      <guid>https://violinSonata.site/2020/use-grpc-in-golang/</guid>
+      <guid>https://violinsonata.site/2020/use-grpc-in-golang/</guid>
       <description>本文以一个简单的CURD服务为例演示了如果一步步使用grpc的接口. 使用protobuf 编写proto文件 proto文件是定义整个proto</description>
     </item>
     
     <item>
       <title>使用Golang创建守护进程</title>
-      <link>https://violinSonata.site/2020/create-daemon-process-in-golang/</link>
+      <link>https://violinsonata.site/2020/create-daemon-process-in-golang/</link>
       <pubDate>Thu, 13 Aug 2020 15:07:00 +0800</pubDate>
       
-      <guid>https://violinSonata.site/2020/create-daemon-process-in-golang/</guid>
+      <guid>https://violinsonata.site/2020/create-daemon-process-in-golang/</guid>
       <description>package main import ( &amp;quot;os&amp;quot; &amp;quot;fmt&amp;quot; &amp;quot;os/signal&amp;quot; &amp;quot;syscall&amp;quot; &amp;quot;time&amp;quot; &amp;quot;log&amp;quot; &amp;quot;os/exec&amp;quot; ) func init() { // 如果本进程的父进程不是init进程, 则 // 创建与本进程相同的子进程, 然后退出, 使 // 子进程被init进程接管, 从</description>
     </item>
     
     <item>
       <title>通过channel模拟信号</title>
-      <link>https://violinSonata.site/2019/broadcast-signals-using-channel/</link>
+      <link>https://violinsonata.site/2019/broadcast-signals-using-channel/</link>
       <pubDate>Tue, 29 Jan 2019 12:52:36 +0800</pubDate>
       
-      <guid>https://violinSonata.site/2019/broadcast-signals-using-channel/</guid>
+      <guid>https://violinsonata.site/2019/broadcast-signals-using-channel/</guid>
       <description>众所周知，在Golang中创建多个goroutine后，可以使用sync.WaitGroup来等待多个协程全部完成。 那么是否有一种方法，不使</description>
     </item>
     
