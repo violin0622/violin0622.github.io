@@ -23,7 +23,7 @@ go env -w GOPRIVATE="*.gitlab.com,private.gitlab.com/myrepo"
 ## 设置git token
 只设置了 go env 还不够。 无论 go mod 也好， go get 也好， 都是依赖git来拉取项目代码的， 如果git没有访问仓库的权限依然不能正确拉取。  
 以 Gitlab 为例， 需要创建一个访问Token， go 控制 git 拉取代码时使用该token进行认证， 才可以拉取代码。  
-![申请token](/post/resources/_gen/images/申请gitlab的token.png)
+![申请token](/image/posts/申请gitlab的token.png)
 
 创建token之后， 对git进行全局设置:
 ```sh
