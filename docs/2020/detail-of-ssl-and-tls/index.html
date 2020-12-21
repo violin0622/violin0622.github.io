@@ -57,7 +57,7 @@
     "datePublished": "2020-08-13 15:26:47 \x2b0800 CST",
     "dateModified" : "2020-08-13 15:26:47 \x2b0800 CST",
     "url" : "\/\/violinsonata.site\/2020\/detail-of-ssl-and-tls\/",
-    "wordCount" : "3597",
+    "wordCount" : "3599",
     "keywords" : [ "SSL\/TLS", "Sonata for solo Violin"]
 }
 </script>
@@ -196,12 +196,12 @@
 
 <h4 id="证书链">证书链</h4>
 
-<p>世界公认权威的CA（根证书的拥有者）是有限的， 而需要验证的客户端是无限的， 如果要一一审核太慢了。 因此基于“我信任你， 你信任他， 因此我信任他”的信任传递， 有了证书链。</p>
+<p>世界公认权威的CA（根证书的拥有者）是有限的， 而需要验证的客户端是无限的， 如果要一一审核太慢了。 因此基于“我信任你， 你信任他， 因此我信任他”的信任传递原则， 有了证书链机制。</p>
 
-<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/post/resources/_gen/images/证书链.png" alt="浏览器中的证书链" class="lazyload"><figcaption class="image-caption">浏览器中的证书链</figcaption></figure>
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/image/posts/证书链.png" alt="浏览器中的证书链" class="lazyload"><figcaption class="image-caption">浏览器中的证书链</figcaption></figure>
 <center style="font-size:14px;color:#C0C0C0;text-decoration:underline">本站的证书链</center></p>
 
-<p>假设客户端添加了权威CA的根证书， 权威CA签发了二级CA， 二级CA签发了三级网站。 客户端与服务端网站通信时， 如果服务端只发送自身的网站证书， 则客户端只能找到颁发者二级CA， 而由于其没有信任二级CA（没有保存二级CA的公钥）， 从而无法完成验证。 因此客户端需要发送自身的证书， 以及签发者二级CA的证书。 客户端先验证网站证书是否由二级CA签发， 再验证二级CA的签发人， 直到发现某一级证书的签发人是自己信任的， 从而完成了证书验证。 如果走完证书连也没有发现可信任的签发人， 则认为该证书是不可信的[1]。</p>
+<p>假设客户端添加了权威CA的根证书， 权威CA签发了二级CA， 二级CA签发了三级网站。 客户端与服务端网站通信时， 如果服务端只发送自身的网站证书， 则客户端只能找到颁发者二级CA， 而由于其没有信任二级CA（没有保存二级CA的公钥）， 从而无法完成验证。 因此客户端需要发送自身的证书， 以及签发者二级CA的证书。 客户端先验证网站证书是否由二级CA签发， 再验证二级CA的签发人， 直到发现某一级证书的签发人是自己信任的， 从而完成了证书验证。 如果走完证书链也没有发现可信任的签发人， 则认为该证书是不可信的<sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup>。</p>
 
 <ul>
 <li>防伪造： 未经过CA验证的不法网站可以使用假的证书， 但由于客户端没有信任假证书的CA， 因此无法通过验证。</li>
@@ -370,9 +370,15 @@ ClientHello请求将向服务端提供以下信息：<br />
 <p>TLS链接建立后双方通信的TLS报文都是Application Data.</p>
 
 <hr />
+<div class="footnotes">
 
-<p>参考:
-<a href="https://blog.csdn.net/mrpre/article/details/77867063">https://blog.csdn.net/mrpre/article/details/77867063</a></p>
+<hr />
+
+<ol>
+<li id="fn:1">参考 <a href="https://blog.csdn.net/mrpre/article/details/77867063">https://blog.csdn.net/mrpre/article/details/77867063</a>
+ <a class="footnote-return" href="#fnref:1"><sup>[return]</sup></a></li>
+</ol>
+</div>
 
     </div>
 
