@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Security on Sonata for solo Violin</title>
-    <link>https://violinsonata.site/tags/security/</link>
+    <link>https://violin0622.github.io/tags/security/</link>
     <description>Recent content in Security on Sonata for solo Violin</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Wed, 12 Aug 2020 16:30:09 +0800</lastBuildDate>
     
-	<atom:link href="https://violinsonata.site/tags/security/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://violin0622.github.io/tags/security/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>网络安全基本概念</title>
-      <link>https://violinsonata.site/2020/basic-concepts-of-network-security/</link>
+      <link>https://violin0622.github.io/2020/basic-concepts-of-network-security/</link>
       <pubDate>Wed, 12 Aug 2020 16:30:09 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2020/basic-concepts-of-network-security/</guid>
+      <guid>https://violin0622.github.io/2020/basic-concepts-of-network-security/</guid>
       <description>对称加密 对称加密很简单， 就是消息传递的双方共享同一个密码。 消息发送人用密码对消息进行加密， 然后将密文发给给消息接收人， 消息接受人使用此密码对</description>
     </item>
     

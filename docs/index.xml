@@ -1,7 +1,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Sonata for solo Violin on Sonata for solo Violin</title>
-    <link>https://violinsonata.site/</link>
+    <link>https://violin0622.github.io/</link>
     <description>Recent content in Sonata for solo Violin on Sonata for solo Violin</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
@@ -10,10 +10,10 @@
     
     <item>
       <title>Golang使用gRPC指南</title>
-      <link>https://violinsonata.site/2020/use-grpc-in-golang/</link>
+      <link>https://violin0622.github.io/2020/use-grpc-in-golang/</link>
       <pubDate>Fri, 04 Sep 2020 15:05:10 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2020/use-grpc-in-golang/</guid>
+      <guid>https://violin0622.github.io/2020/use-grpc-in-golang/</guid>
       <description>
 
 &lt;p&gt;本文以一个简单的CURD服务为例演示了如果一步步使用grpc的接口.&lt;/p&gt;
@@ -633,10 +633,10 @@ func main() {
     
     <item>
       <title>Golang使用私有仓库</title>
-      <link>https://violinsonata.site/2020/use-private-repo-in-golang/</link>
+      <link>https://violin0622.github.io/2020/use-private-repo-in-golang/</link>
       <pubDate>Mon, 31 Aug 2020 14:51:20 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2020/use-private-repo-in-golang/</guid>
+      <guid>https://violin0622.github.io/2020/use-private-repo-in-golang/</guid>
       <description>
 
 &lt;p&gt;本文基于&lt;code&gt;go 1.13&lt;/code&gt;即以上进行演示。&lt;br /&gt;
@@ -657,7 +657,7 @@ go env -w GOPRIVATE=&amp;quot;*.gitlab.com,private.gitlab.com/myrepo&amp;quot;
 
 &lt;p&gt;只设置了 go env 还不够。 无论 go mod 也好， go get 也好， 都是依赖git来拉取项目代码的， 如果git没有访问仓库的权限依然不能正确拉取。&lt;br /&gt;
 以 Gitlab 为例， 需要创建一个访问Token， go 控制 git 拉取代码时使用该token进行认证， 才可以拉取代码。&lt;br /&gt;
-&lt;img src=&#34;https://violinsonata.site/post/resources/_gen/images/申请gitlab的token.png&#34; alt=&#34;申请token&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;https://violin0622.github.io/post/resources/_gen/images/申请gitlab的token.png&#34; alt=&#34;申请token&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;创建token之后， 对git进行全局设置:&lt;/p&gt;
 
@@ -674,10 +674,10 @@ go env -w GOPRIVATE=&amp;quot;*.gitlab.com,private.gitlab.com/myrepo&amp;quot;
     
     <item>
       <title>Basic Concept of Rabbitmq</title>
-      <link>https://violinsonata.site/2020/basic-concept-of-rabbitmq/</link>
+      <link>https://violin0622.github.io/2020/basic-concept-of-rabbitmq/</link>
       <pubDate>Mon, 24 Aug 2020 15:25:07 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2020/basic-concept-of-rabbitmq/</guid>
+      <guid>https://violin0622.github.io/2020/basic-concept-of-rabbitmq/</guid>
       <description>
 
 &lt;h2 id=&#34;message-消息&#34;&gt;Message 消息&lt;/h2&gt;
@@ -789,10 +789,10 @@ channel.basic_publish(exchange=&#39;&#39;,
     
     <item>
       <title>SSL/TLS的工作原理</title>
-      <link>https://violinsonata.site/2020/detail-of-ssl-and-tls/</link>
+      <link>https://violin0622.github.io/2020/detail-of-ssl-and-tls/</link>
       <pubDate>Thu, 13 Aug 2020 15:26:47 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2020/detail-of-ssl-and-tls/</guid>
+      <guid>https://violin0622.github.io/2020/detail-of-ssl-and-tls/</guid>
       <description>
 
 &lt;h2 id=&#34;网络通信过程中可能遇到的风险与应对&#34;&gt;网络通信过程中可能遇到的风险与应对&lt;/h2&gt;
@@ -842,7 +842,7 @@ channel.basic_publish(exchange=&#39;&#39;,
 
 &lt;p&gt;世界公认权威的CA（根证书的拥有者）是有限的， 而需要验证的客户端是无限的， 如果要一一审核太慢了。 因此基于“我信任你， 你信任他， 因此我信任他”的信任传递， 有了证书链。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://violinsonata.site/post/resources/_gen/images/证书链.png&#34; alt=&#34;浏览器中的证书链&#34; /&gt;
+&lt;p&gt;&lt;img src=&#34;https://violin0622.github.io/post/resources/_gen/images/证书链.png&#34; alt=&#34;浏览器中的证书链&#34; /&gt;
 &lt;center style=&#34;font-size:14px;color:#C0C0C0;text-decoration:underline&#34;&gt;本站的证书链&lt;/center&gt;&lt;/p&gt;
 
 &lt;p&gt;假设客户端添加了权威CA的根证书， 权威CA签发了二级CA， 二级CA签发了三级网站。 客户端与服务端网站通信时， 如果服务端只发送自身的网站证书， 则客户端只能找到颁发者二级CA， 而由于其没有信任二级CA（没有保存二级CA的公钥）， 从而无法完成验证。 因此客户端需要发送自身的证书， 以及签发者二级CA的证书。 客户端先验证网站证书是否由二级CA签发， 再验证二级CA的签发人， 直到发现某一级证书的签发人是自己信任的， 从而完成了证书验证。 如果走完证书连也没有发现可信任的签发人， 则认为该证书是不可信的[1]。&lt;/p&gt;
@@ -1022,10 +1022,10 @@ ClientHello请求将向服务端提供以下信息：&lt;br /&gt;
     
     <item>
       <title>使用Golang创建守护进程</title>
-      <link>https://violinsonata.site/2020/create-daemon-process-in-golang/</link>
+      <link>https://violin0622.github.io/2020/create-daemon-process-in-golang/</link>
       <pubDate>Thu, 13 Aug 2020 15:07:00 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2020/create-daemon-process-in-golang/</guid>
+      <guid>https://violin0622.github.io/2020/create-daemon-process-in-golang/</guid>
       <description>&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;package main
  
 import (
@@ -1086,10 +1086,10 @@ func main()  {
     
     <item>
       <title>网络安全基本概念</title>
-      <link>https://violinsonata.site/2020/basic-concepts-of-network-security/</link>
+      <link>https://violin0622.github.io/2020/basic-concepts-of-network-security/</link>
       <pubDate>Wed, 12 Aug 2020 16:30:09 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2020/basic-concepts-of-network-security/</guid>
+      <guid>https://violin0622.github.io/2020/basic-concepts-of-network-security/</guid>
       <description>
 
 &lt;h2 id=&#34;对称加密&#34;&gt;对称加密&lt;/h2&gt;
@@ -1126,10 +1126,10 @@ func main()  {
     
     <item>
       <title>Docker容器中访问宿主机网络</title>
-      <link>https://violinsonata.site/2020/access-host-network-in-docker/</link>
+      <link>https://violin0622.github.io/2020/access-host-network-in-docker/</link>
       <pubDate>Wed, 08 Apr 2020 14:41:12 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2020/access-host-network-in-docker/</guid>
+      <guid>https://violin0622.github.io/2020/access-host-network-in-docker/</guid>
       <description>
 
 &lt;h2 id=&#34;docker容器监听宿主机端口&#34;&gt;Docker容器监听宿主机端口&lt;/h2&gt;
@@ -1204,10 +1204,10 @@ docker run --rm \
     
     <item>
       <title>MySQL常用操作</title>
-      <link>https://violinsonata.site/2020/useful-operates-in-mysql/</link>
+      <link>https://violin0622.github.io/2020/useful-operates-in-mysql/</link>
       <pubDate>Wed, 19 Feb 2020 15:14:38 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2020/useful-operates-in-mysql/</guid>
+      <guid>https://violin0622.github.io/2020/useful-operates-in-mysql/</guid>
       <description>
 
 &lt;h2 id=&#34;数据库概念关系&#34;&gt;数据库概念关系&lt;/h2&gt;
@@ -1394,10 +1394,10 @@ alter table  表名 drop index 索引名;
     
     <item>
       <title>Kubernetes中的容器配置管理：ConfigMap</title>
-      <link>https://violinsonata.site/2019/configmap/</link>
+      <link>https://violin0622.github.io/2019/configmap/</link>
       <pubDate>Mon, 16 Sep 2019 10:51:55 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2019/configmap/</guid>
+      <guid>https://violin0622.github.io/2019/configmap/</guid>
       <description>
 
 &lt;h2 id=&#34;什么是configmap&#34;&gt;什么是ConfigMap&lt;/h2&gt;
@@ -1596,10 +1596,10 @@ spec:
     
     <item>
       <title>管理Kubernetes中的对象</title>
-      <link>https://violinsonata.site/2019/lables/</link>
+      <link>https://violin0622.github.io/2019/lables/</link>
       <pubDate>Sat, 14 Sep 2019 10:51:55 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2019/lables/</guid>
+      <guid>https://violin0622.github.io/2019/lables/</guid>
       <description>
 
 &lt;h2 id=&#34;namespace&#34;&gt;Namespace&lt;/h2&gt;
@@ -1679,10 +1679,10 @@ metadata:
     
     <item>
       <title>Flume: 日志收集、聚合、归档工具</title>
-      <link>https://violinsonata.site/2019/flume/</link>
+      <link>https://violin0622.github.io/2019/flume/</link>
       <pubDate>Sun, 24 Mar 2019 16:24:47 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2019/flume/</guid>
+      <guid>https://violin0622.github.io/2019/flume/</guid>
       <description>&lt;p&gt;在大数据时代， 计算机技术已经不是阻碍各大互联网公司发展的壁垒——在开源浪潮下， 所有的技术都是共享的。 甚至初创公司的技术栈会比大公司的更新更先进。 在这样的背景下， 只有数据是最珍贵的， 所有的公司都将自己搜集到的用户数据视若珍宝， 从中进行大数据分析以更好的抓住用户。&lt;/p&gt;
 
 &lt;p&gt;那么数据是从哪里来的呢？毫无疑问日志是用户数据最好的来源。 以前的日志只是用来记录服务本身的运行状态， 只要服务不出问题， 那么没有人会去查看日志， 最多为了避免单个文件过大难以查阅， 写个定时任务将日志拆分成多个小文件。 即便服务出了故障， 查看一个月以前的日志也没什么帮助(除了少数特殊情况)， 因此 为了避免日志无限堆积占用磁盘空间， 通常还会有另一个定时任务负责把太久远的日志文件删除。&lt;/p&gt;
@@ -1706,10 +1706,10 @@ metadata:
     
     <item>
       <title>&lt;译&gt;并发模型</title>
-      <link>https://violinsonata.site/2019/concurrency-model/</link>
+      <link>https://violin0622.github.io/2019/concurrency-model/</link>
       <pubDate>Sat, 02 Mar 2019 19:23:36 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2019/concurrency-model/</guid>
+      <guid>https://violin0622.github.io/2019/concurrency-model/</guid>
       <description>
 
 &lt;blockquote&gt;
@@ -1890,10 +1890,10 @@ metadata:
     
     <item>
       <title>通过channel模拟信号</title>
-      <link>https://violinsonata.site/2019/broadcast-signals-using-channel/</link>
+      <link>https://violin0622.github.io/2019/broadcast-signals-using-channel/</link>
       <pubDate>Tue, 29 Jan 2019 12:52:36 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2019/broadcast-signals-using-channel/</guid>
+      <guid>https://violin0622.github.io/2019/broadcast-signals-using-channel/</guid>
       <description>&lt;p&gt;众所周知，在Golang中创建多个goroutine后，可以使用&lt;code&gt;sync.WaitGroup&lt;/code&gt;来等待多个协程全部完成。&lt;br /&gt;
 那么是否有一种方法，不使用这个组件也能完成相同的功能呢？&lt;br /&gt;
 有，那就是使用无缓存的&lt;code&gt;channel&lt;/code&gt;。&lt;/p&gt;
@@ -2013,10 +2013,10 @@ signal 0&lt;br /&gt;
     
     <item>
       <title>Even主题的小吐槽</title>
-      <link>https://violinsonata.site/2019/disadvance-on-even/</link>
+      <link>https://violin0622.github.io/2019/disadvance-on-even/</link>
       <pubDate>Mon, 28 Jan 2019 13:40:16 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2019/disadvance-on-even/</guid>
+      <guid>https://violin0622.github.io/2019/disadvance-on-even/</guid>
       <description>&lt;p&gt;搭建博客时横向对比了几个喜欢的Hexo主题，最终选定了&lt;a href=&#34;https://github.com/ahonn/hexo-theme-even&#34;&gt;Even&lt;/a&gt; 。&lt;br /&gt;
 不过依然对&lt;code&gt;Even&lt;/code&gt;有几个不太满意的地方，在这里记录下来，日后有时间就自己修改一下。&lt;/p&gt;
 
@@ -2057,10 +2057,10 @@ signal 0&lt;br /&gt;
     
     <item>
       <title>Python虚拟环境指南</title>
-      <link>https://violinsonata.site/2019/virtualenvwrapper/</link>
+      <link>https://violin0622.github.io/2019/virtualenvwrapper/</link>
       <pubDate>Sun, 27 Jan 2019 23:39:34 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2019/virtualenvwrapper/</guid>
+      <guid>https://violin0622.github.io/2019/virtualenvwrapper/</guid>
       <description>&lt;h2 id=&#34;安装-virtualenv&#34;&gt;安装&lt;code&gt;virtualenv&lt;/code&gt;:&lt;/h2&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$pip install virtualenv
