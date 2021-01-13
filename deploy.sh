@@ -5,7 +5,7 @@ set -e
 
 # Build the project.
 printf "\033[0;32mBuilding sites...\033[0m\n"
-hugo # if using a theme, replace with `hugo -t <YOURTHEME>`
+hugo > /dev/null
 
 # Add changes to git.
 git add .
@@ -19,6 +19,6 @@ git commit -m "$msg"
 
 # Push source and build repos.
 printf "\033[0;32mDeploying updates to GitHub...\033[0m\n"
-git push origin main
+git push origin main > /dev/null
 
 printf "\033[0;32mDeployed.\033[0m\n"
