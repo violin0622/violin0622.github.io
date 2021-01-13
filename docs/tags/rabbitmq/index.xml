@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>RabbitMQ on Sonata for solo Violin</title>
-    <link>//violinsonata.site/tags/rabbitmq/</link>
+    <link>https://violinsonata.site/tags/rabbitmq/</link>
     <description>Recent content in RabbitMQ on Sonata for solo Violin</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Mon, 24 Aug 2020 15:25:07 +0800</lastBuildDate>
     
-	<atom:link href="//violinsonata.site/tags/rabbitmq/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://violinsonata.site/tags/rabbitmq/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Basic Concept of Rabbitmq</title>
-      <link>//violinsonata.site/2020/basic-concept-of-rabbitmq/</link>
+      <link>https://violinsonata.site/2020/basic-concept-of-rabbitmq/</link>
       <pubDate>Mon, 24 Aug 2020 15:25:07 +0800</pubDate>
       
-      <guid>//violinsonata.site/2020/basic-concept-of-rabbitmq/</guid>
+      <guid>https://violinsonata.site/2020/basic-concept-of-rabbitmq/</guid>
       <description>Message 消息 消息，消息是不具名的，它由消息头和消息体组成。消息体是不透明的，而消息头则由一系列的可选属性组成，这些属性包括routing-key（</description>
     </item>
     

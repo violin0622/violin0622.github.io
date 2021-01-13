@@ -2,57 +2,57 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>软件工程 on Sonata for solo Violin</title>
-    <link>//violinsonata.site/categories/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/</link>
+    <link>https://violinsonata.site/categories/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/</link>
     <description>Recent content in 软件工程 on Sonata for solo Violin</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Thu, 13 Aug 2020 15:26:47 +0800</lastBuildDate>
     
-	<atom:link href="//violinsonata.site/categories/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://violinsonata.site/categories/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>SSL/TLS的工作原理</title>
-      <link>//violinsonata.site/2020/detail-of-ssl-and-tls/</link>
+      <link>https://violinsonata.site/2020/detail-of-ssl-and-tls/</link>
       <pubDate>Thu, 13 Aug 2020 15:26:47 +0800</pubDate>
       
-      <guid>//violinsonata.site/2020/detail-of-ssl-and-tls/</guid>
+      <guid>https://violinsonata.site/2020/detail-of-ssl-and-tls/</guid>
       <description>网络通信过程中可能遇到的风险与应对 网络通信过程中的数据安全将要面临三个风险: 1. 窃听风险(eavesdropping) 2. 篡改风险(tamper</description>
     </item>
     
     <item>
       <title>网络安全基本概念</title>
-      <link>//violinsonata.site/2020/basic-concepts-of-network-security/</link>
+      <link>https://violinsonata.site/2020/basic-concepts-of-network-security/</link>
       <pubDate>Wed, 12 Aug 2020 16:30:09 +0800</pubDate>
       
-      <guid>//violinsonata.site/2020/basic-concepts-of-network-security/</guid>
+      <guid>https://violinsonata.site/2020/basic-concepts-of-network-security/</guid>
       <description>对称加密 对称加密很简单， 就是消息传递的双方共享同一个密码。 消息发送人用密码对消息进行加密， 然后将密文发给给消息接收人， 消息接受人使用此密码对</description>
     </item>
     
     <item>
       <title>Docker容器中访问宿主机网络</title>
-      <link>//violinsonata.site/2020/access-host-network-in-docker/</link>
+      <link>https://violinsonata.site/2020/access-host-network-in-docker/</link>
       <pubDate>Wed, 08 Apr 2020 14:41:12 +0800</pubDate>
       
-      <guid>//violinsonata.site/2020/access-host-network-in-docker/</guid>
+      <guid>https://violinsonata.site/2020/access-host-network-in-docker/</guid>
       <description>Docker容器监听宿主机端口 使用端口映射 现在假设有一个Docker容器nginx， 它运行时将监听docker内的80端口， 此时宿主机的80</description>
     </item>
     
     <item>
       <title>Kubernetes中的容器配置管理：ConfigMap</title>
-      <link>//violinsonata.site/2019/configmap/</link>
+      <link>https://violinsonata.site/2019/configmap/</link>
       <pubDate>Mon, 16 Sep 2019 10:51:55 +0800</pubDate>
       
-      <guid>//violinsonata.site/2019/configmap/</guid>
+      <guid>https://violinsonata.site/2019/configmap/</guid>
       <description>什么是ConfigMap ConfigMap ，即配置字典， 是Kubernetes提供的用于管理容器中程序运行所需配置的解决方案。 它是一种持久化的机制， 不会随着</description>
     </item>
     
     <item>
       <title>管理Kubernetes中的对象</title>
-      <link>//violinsonata.site/2019/lables/</link>
+      <link>https://violinsonata.site/2019/lables/</link>
       <pubDate>Sat, 14 Sep 2019 10:51:55 +0800</pubDate>
       
-      <guid>//violinsonata.site/2019/lables/</guid>
+      <guid>https://violinsonata.site/2019/lables/</guid>
       <description>Namespace Kubernetes 使用命名空间来进行隔离， 每个对象只能属于其中一个命名空间， 不通的命名空间之间相互隔离。 值得一提的是， 命名空间也会影响到Service的行</description>
     </item>
     

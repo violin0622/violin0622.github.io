@@ -2,7 +2,7 @@
 title: Java的Synchronized关键字
 date: 2021-01-08T15:00:10+08:00
 tags: [并发编程, Java]
-categories: [编程, Java]
+categories: [编程]
 type: 文档
 
 ---

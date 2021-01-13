@@ -2,8 +2,9 @@
 title: <译>并发模型
 date: 2019-03-02T19:23:36+08:00
 tags:
-- translate
-categories: [编程, concurrent]
+- 翻译
+- 并发编程
+categories: [编程]
 
 ---
 
