@@ -1,1 +1,3 @@
 themes/
+*.sw*
+.DS_Store
