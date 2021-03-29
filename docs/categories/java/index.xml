@@ -6,17 +6,17 @@
     <description>Recent content in Java on Sonata for solo Violin</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 08 Jan 2021 15:00:10 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 01 Mar 2021 09:55:21 +0800</lastBuildDate>
     
 	<atom:link href="https://violinsonata.site/categories/java/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Java的Synchronized关键字</title>
-      <link>https://violinsonata.site/2021/synchronized-of-java/</link>
-      <pubDate>Fri, 08 Jan 2021 15:00:10 +0800</pubDate>
+      <link>https://violinsonata.site/2021/java%E7%9A%84synchronized%E5%85%B3%E9%94%AE%E5%AD%97/</link>
+      <pubDate>Mon, 01 Mar 2021 09:55:21 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2021/synchronized-of-java/</guid>
+      <guid>https://violinsonata.site/2021/java%E7%9A%84synchronized%E5%85%B3%E9%94%AE%E5%AD%97/</guid>
       <description>[toc] Synchronized 关键字是 Java 中进行并发控制的基础。通过 Synchronized 修饰一段代码块，从而将这段代码标记为临界区，以便控制其中代码互斥地执行。 Synchronized 关键字的用法很多，既可以</description>
     </item>
     

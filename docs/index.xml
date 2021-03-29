@@ -5,8 +5,310 @@
     <description>Recent content in Sonata for solo Violin on Sonata for solo Violin</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 08 Jan 2021 15:00:10 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 01 Mar 2021 09:55:21 +0800</lastBuildDate>
     <atom:link href="/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Java的Synchronized关键字</title>
+      <link>https://violinsonata.site/2021/java%E7%9A%84synchronized%E5%85%B3%E9%94%AE%E5%AD%97/</link>
+      <pubDate>Mon, 01 Mar 2021 09:55:21 +0800</pubDate>
+      
+      <guid>https://violinsonata.site/2021/java%E7%9A%84synchronized%E5%85%B3%E9%94%AE%E5%AD%97/</guid>
+      <description>
+
+&lt;p&gt;[toc]&lt;/p&gt;
+
+&lt;p&gt;Synchronized 关键字是 Java 中进行并发控制的基础。通过 Synchronized 修饰一段代码块，从而将这段代码标记为临界区，以便控制其中代码互斥地执行。&lt;/p&gt;
+
+&lt;p&gt;Synchronized 关键字的用法很多，既可以用来修饰一个函数，也可以单独修饰一段代码块；既可以在静态函数中使用，也可以在普通函数中使用。 但是无论怎么使用，其机制却都是一样的。理解 synchronized 作用的重点是要知道它需要指定一个对象作为锁，使用相同对象作为锁的所有 synchronized 代码，都会互斥地执行，使用不同对象的作为锁的 synchronized 代码，可以并发地执行。&lt;/p&gt;
+
+&lt;h2 id=&#34;基本用法&#34;&gt;基本用法&lt;/h2&gt;
+
+&lt;p&gt;Synchronized 最基本的用法是这样：
+![[basic-java-synchronized-usage]]&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class SyncDemo{
+  private Object lock = new Object(); 
+  void foo(){
+    synchronized(lock){
+      System.out.println(&amp;quot;Hello world&amp;quot;);
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;synchronized 通过括号指定一个对象作为锁，将内部的代码块锁定，不能被多个线程同时执行。&lt;/p&gt;
+
+&lt;h2 id=&#34;synchronized-使用对象作为锁&#34;&gt;synchronized 使用对象作为锁&lt;/h2&gt;
+
+&lt;p&gt;要注意， synchronized 关键字后跟的括号内，必须是一个已经初始化的对象，相当于将这个对象当作是一个锁。 如果多个不同的代码块关联到同一个对象上， 那么这多个代码块共享一个锁，也就是多个代码块不能同时执行，同一时刻只能执行其中一段，直到这段代码退出，其他线程才能再次执行相同的代码块或其他使用相同对象锁定的代码块。&lt;br /&gt;
+看这个例子：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;// 使用 java 11 编写。
+// 两个线程分别执行 foo bar，而这两个函数都
+// 用 synchronized 关键字关联到同一个 lock 对象。
+public class SyncDemo {
+  private static Object lock = new Object();
+
+  static void foo(){
+    System.out.println(&amp;quot;Foo started.&amp;quot;);
+    synchronized(lock){
+      System.out.println(&amp;quot;Foo in&amp;quot;);
+      try{
+        Thread.sleep(1000);
+      }catch(InterruptedException e){
+          e.printStackTrace();
+      }
+      System.out.println(&amp;quot;Foo out&amp;quot;);
+    }
+  }
+
+  static void bar() {
+    System.out.println(&amp;quot;Bar started.&amp;quot;);
+    synchronized(lock){
+      System.out.println(&amp;quot;Bar in&amp;quot;);
+      try{
+        Thread.sleep(1000);
+      }catch(InterruptedException e){
+          e.printStackTrace();
+      }
+      System.out.println(&amp;quot;Boo out&amp;quot;);
+    }
+  }
+
+  public static void main(String[] args){
+    var t1 = new Thread(SyncDemo::foo);
+    var t2 = new Thread(SyncDemo::bar);
+    t1.start();
+    t2.start();
+
+    while(t1.isAlive() || t2.isAlive());
+  }
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;执行会产生如下结果:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$java SyncDemo.java
+Foo started.
+Foo in
+Bar started.
+Foo out
+Bar in
+Boo out      
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可见 Foo，Bar 在两个线程中近乎同时启动，Foo 抢到了锁，先执行同步代码块， 而 Bar 只能等 Foo 执行完了之后再执行。 可见虽然是不同的代码块，但因为 synchronized 关联到同一个对象作为锁，因此也只能串行执行。&lt;/p&gt;
+
+&lt;h2 id=&#34;使用当前对象作为锁&#34;&gt;使用当前对象作为锁&lt;/h2&gt;
+
+&lt;p&gt;有时候，synchronized 关键字可以直接以对象自身作为锁：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class SyncDemo{
+  void foo(){
+    synchronized(this) {
+      System.out.println(&amp;quot;Hello world&amp;quot;);
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;不用专门创建一个对象作为锁，看起来方便了很多。不过要注意的是，这样的方式声明的 foo 函数并不是全局同步的，而是每个 SyncDemo 对象各自同步。如果有两个 SyncDemo 分别在两个线程中调用 foo，那么不会发生互斥，而是会各自执行。
+比如下面的代码:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class SyncDemo{
+  void foo(){
+    synchronized(this){
+      System.out.println(&amp;quot;sleep: &amp;quot; + Thread.currentThread().getName());
+      try{
+        Thread.sleep(1000);
+      }catch(InterruptedException e){
+        e.printStackTrace();
+      }
+      System.out.println(&amp;quot;awake: &amp;quot; + Thread.currentThread().getName());
+    }
+  }
+  public static void main(String[] args){
+    var sd1 = new SyncDemo();
+    var sd2 = new SyncDemo();
+    var t1 = new Thread(sd1::foo, &amp;quot;t1&amp;quot;);
+    var t2 = new Thread(sd2::foo, &amp;quot;t2&amp;quot;);
+    t1.start();
+    t2.start();
+
+    while(t1.isAlive() || t2.isAlive());
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;执行结果是这样：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;sleep: t1
+sleep: t2
+awake: t1
+awake: t2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;两个线程 t1 t2 是同时陷入休眠，同时苏醒，说明两个线程的 foo 是并发执行的。&lt;/p&gt;
+
+&lt;h2 id=&#34;使用类对象作为锁&#34;&gt;使用类对象作为锁&lt;/h2&gt;
+
+&lt;p&gt;如果想要全局同步的话，可以这样写:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class SyncDemo{
+  void foo(){
+    synchronized(SyncDemo.class) {
+      System.out.println(&amp;quot;Hello world&amp;quot;);
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;JVM 在加载 SyncDemo 类的时候，会为这个类创建一个 java.lang.Class 的对象，我们假设该对象名为 SyncDemoClassObject（实际上不是）。SyncDemoClassObject 可以通过 SyncDemo 类型的 &lt;code&gt;.class&lt;/code&gt; 属性，或者将 SyncDemo 类实例化之后通过实例对象的 &lt;code&gt;.getClass()&lt;/code&gt;方法访问。这样以来， &lt;code&gt;synchronized(SyncDemo.class)&lt;/code&gt; 实际上是以 SyncDemoClassObject 作为锁。 SyncDemoClassObject 是全局唯一的， 从而以此为锁的 foo() 方法也可以做到全局互斥。&lt;/p&gt;
+
+&lt;h2 id=&#34;直接作为函数修饰符&#34;&gt;直接作为函数修饰符&lt;/h2&gt;
+
+&lt;p&gt;有时候，如果整个函数都需要互斥执行，那么可以这样写:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class SyncDemo{
+  synchronized void foo(){
+    System.out.println(&amp;quot;Hello world&amp;quot;);
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这实际上算是一种语法糖，此时该函数会以对象本身作为锁。也就是和下面的代码等价:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class SyncDemo{
+  void foo(){
+    synchronized(this) {
+      System.out.println(&amp;quot;Hello world&amp;quot;);
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;与-static-关键字配合使用&#34;&gt;与 static 关键字配合使用&lt;/h2&gt;
+
+&lt;p&gt;synchronized 与 static 关键字可以配合使用，并且其机制依然不变：一定需要关联一个实例对象作为锁。
+当 synchronized 修饰静态函数时，由于类尚未实例化，this指针没有指向具体对象，因此不会使用 this 作为锁，而是转而使用 SyncDemoClassObject 作为锁。此时全局的 foo 函数都互斥执行。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class SyncDemo{
+  static synchronized void foo(){
+    System.out.println(&amp;quot;Hello world&amp;quot;);
+  }
+  // foo bar 两种方式是等价的
+  static void bar(){
+    synchronized(SyncDemo.class){
+      System.out.println(&amp;quot;Hello world&amp;quot;);
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;不要将-synchronized-绑定在基础类型上&#34;&gt;不要将 synchronized 绑定在基础类型上&lt;/h2&gt;
+
+&lt;p&gt;鉴于 JVM 对于基础类型的实现方式，不同基础类型的对象如果其值相同，那么很有可能指向相同的内存对象。因此看起来互不相关的两段同步代码，可能会使用同一个对象而互斥执行，进而影响其性能。
+例如下面的代码：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;import static com.pivovarit.function.ThrowingRunnable.unchecked;
+
+public class SyncDemo {
+  Integer i1 = Integer.valueOf(1);
+  Integer i2 = Integer.valueOf(1);
+  void foo() throws InterruptedException{
+    synchronized(i1) {
+      System.out.println(&amp;quot;sleep: &amp;quot; + Thread.currentThread().getName());
+      Thread.sleep(1000);
+      System.out.println(&amp;quot;awake: &amp;quot; + Thread.currentThread().getName());
+    }
+  }
+  void bar() throws InterruptedException{
+    synchronized(i2){
+    System.out.println(&amp;quot;sleep: &amp;quot; + Thread.currentThread().getName());
+    Thread.sleep(1000);
+    System.out.println(&amp;quot;awake: &amp;quot; + Thread.currentThread().getName());
+    }
+  }
+
+  public static void main(String[] args){
+    var sd1 = new SyncDemo();
+    var sd2 = new SyncDemo();
+    var t1 = new Thread(unchecked(sd1::foo), &amp;quot;t1&amp;quot;);
+    var t2 = new Thread(unchecked(sd2::foo), &amp;quot;t2&amp;quot;);
+    t1.start();
+    t2.start();
+
+    while(t1.isAlive() || t2.isAlive());
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;执行后的结果是：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$java -cp ./throwing-function-1.5.1.jar SyncDemo.java
+sleep: t1
+awake: t1
+sleep: t2
+awake: t2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看到两个线程实际是串行执行的。 这是因为 i1 和 i2 因为其值相同， 而指向了相同的对象。有这种情况的还有其他基本类型的封装类型，以及String类型。&lt;/p&gt;
+
+&lt;h2 id=&#34;synchronized-是可重入锁&#34;&gt;synchronized 是可重入锁&lt;/h2&gt;
+
+&lt;p&gt;可重入锁的含义是当一个线程内的调用链上有多个函数尝试获取同一把锁时， 可以不用再次抢占。最典型的应用场景是在递归函数中，如果不用重入锁，当父函数获取了锁并调用子函数，子函数再次尝试获取锁，于是造成死锁。 而 Java 的 synchronized 关键字修饰的代码块使用重入锁，从而避免了死锁。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;import static com.pivovarit.function.ThrowingRunnable.unchecked;
+
+public class SyncDemo {
+  void foo() throws InterruptedException{
+    var name = Thread.currentThread().getName();
+    synchronized(SyncDemo.class) {
+      System.out.println(&amp;quot;sleep: foo &amp;quot; + name); 
+      Thread.sleep(1000);
+      bar();
+      System.out.println(&amp;quot;awake: foo &amp;quot; + name);
+    }
+  }
+
+  void bar() throws InterruptedException{
+    var name = Thread.currentThread().getName();
+    synchronized(SyncDemo.class){
+      System.out.println(&amp;quot;sleep: bar &amp;quot; + name);
+      Thread.sleep(1000);
+      System.out.println(&amp;quot;awake: bar &amp;quot; + name);
+    }
+  }
+
+  public static void main(String[] args){
+    var sd1 = new SyncDemo();
+    var sd2 = new SyncDemo();
+    var t1 = new Thread(unchecked(sd1::foo), &amp;quot;t1&amp;quot;);
+    var t2 = new Thread(unchecked(sd2::bar), &amp;quot;t2&amp;quot;);
+    t1.start();
+    t2.start();
+
+    unchecked(t1::join);
+    unchecked(t2::join);
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;执行结果如下:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$java -cp ./throwing-function-1.5.1.jar SyncDemo.java
+sleep: foo t1
+sleep: bar t1
+awake: bar t1
+awake: foo t1
+sleep: bar t2
+awake: bar t2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看出 t1 内的 foo 函数先抢占了锁，然后调用 bar ，由于在同一个线程内， bar 可以直接执行，此时相当于 t1 内的 foo 和 bar 都持有该锁。不过由于两个函数在同一个线程内，线程内的代码串行执行，因此不会出现「竞态条件」。 当 t1 的 bar 执行完成后返回， t1 内的 foo 继续执行到结束退出。 直到此时 t1 才释放了锁，从而 t2 开始执行 bar。&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Java的Synchronized关键字</title>
@@ -2317,50 +2619,6 @@ signal 0&lt;br /&gt;
 - 只能以类似广播的方式发送信号，一次close，所有监听的goroutine都会响应。&lt;br /&gt;
   例如，你创建了十个阻塞的goroutine,而只想启动其中的三个（无论是特定的三个还是任意三个），这是无法实现的。&lt;/p&gt;
 </description>
-    </item>
-    
-    <item>
-      <title>Even主题的小吐槽</title>
-      <link>https://violinsonata.site/2019/disadvance-on-even/</link>
-      <pubDate>Mon, 28 Jan 2019 13:40:16 +0800</pubDate>
-      
-      <guid>https://violinsonata.site/2019/disadvance-on-even/</guid>
-      <description>&lt;p&gt;搭建博客时横向对比了几个喜欢的Hexo主题，最终选定了&lt;a href=&#34;https://github.com/ahonn/hexo-theme-even&#34;&gt;Even&lt;/a&gt; 。&lt;br /&gt;
-不过依然对&lt;code&gt;Even&lt;/code&gt;有几个不太满意的地方，在这里记录下来，日后有时间就自己修改一下。&lt;/p&gt;
-
-&lt;h2 id=&#34;主题颜色不好看&#34;&gt;主题颜色不好看。&lt;/h2&gt;
-
-&lt;p&gt;&lt;code&gt;Even&lt;/code&gt;默认自带的几个主题颜色都不太好看，好在作者在Wiki中介绍了自定义颜色的方法，想要修改不难。&lt;/p&gt;
-
-&lt;h2 id=&#34;没有分享链接按钮&#34;&gt;没有分享链接按钮&lt;/h2&gt;
-
-&lt;p&gt;&lt;code&gt;Even&lt;/code&gt;没有设置&lt;code&gt;分享到&lt;/code&gt;这类的按钮，这有点不太方便。&lt;/p&gt;
-
-&lt;h2 id=&#34;版权信息需要完善&#34;&gt;版权信息需要完善&lt;/h2&gt;
-
-&lt;p&gt;&lt;code&gt;Even&lt;/code&gt;的版权信息放在每篇文章的底部， 注明了&lt;code&gt;作者&lt;/code&gt;,&lt;code&gt;本文链接&lt;/code&gt;,&lt;code&gt;许可协议&lt;/code&gt;。不过美中不足的是，这些信息的字体太大了，当阅读到底部的时候，有点喧宾夺主的感觉。
-另外，相比于摆出跳转链接，我觉得更好的方案是&lt;code&gt;普通文字+复制链接按钮&lt;/code&gt;。&lt;/p&gt;
-
-&lt;h2 id=&#34;分类系统需要完善&#34;&gt;分类系统需要完善&lt;/h2&gt;
-
-&lt;p&gt;&lt;code&gt;Even&lt;/code&gt;作者本身的博客并没有在导航栏上添加&lt;code&gt;分类&lt;/code&gt;页面，通常要在文章中点击分类链接，跳转到相同分类的索引页面。&lt;/p&gt;
-
-&lt;p&gt;不过如果添加了&lt;code&gt;分类&lt;/code&gt;导航，点进去会发现该页面的布局和跳转逻辑竟然和标签是一样的！ 或许是作者没有搞清楚在Hexo中目录和标签的区别吧，这方面我觉得&lt;a href=&#34;https://github.com/probberechts/hexo-theme-cactus&#34;&gt;Cactus&lt;/a&gt;做的更好一些。&lt;/p&gt;
-
-&lt;p&gt;在&lt;code&gt;Cactus&lt;/code&gt;中，标签的跳转逻辑与&lt;code&gt;Even&lt;/code&gt;是一样的，但是在分类页面， &lt;code&gt;Cactus&lt;/code&gt;会直接将所有的目录列出来，点击相对应的目录，可以显示该目录下所有的文章标题。
-如果对于多级目录没有需求，所有文章都只在一级目录下的话，那可以考虑另一种逻辑：直接显示所有的目录及其下的文章标题。这种的展示方式就像是归档一样了，更加简单直接一些。&lt;/p&gt;
-
-&lt;p&gt;另外，&lt;code&gt;分类&lt;/code&gt;的计数功能似乎有点小问题：计数只增不减，删除一个目录，计数不会减小。&lt;/p&gt;
-
-&lt;p&gt;顺带一提，&lt;code&gt;Cactus&lt;/code&gt;也是一个非常优秀的Hexo主题，上面说到的几点不足在&lt;code&gt;Cactus&lt;/code&gt;中都很完善。不过这个主题也有硬伤，就是markdown的渲染太丑了，而且目录对于多级标题的支持有点小问题，所以只能忍痛割爱了。&lt;/p&gt;
-
-&lt;h2 id=&#34;seo优化&#34;&gt;SEO优化&lt;/h2&gt;
-
-&lt;p&gt;虽然不清楚是怎么回事，不过&lt;code&gt;Even&lt;/code&gt;的SEO优化似乎做的不如&lt;code&gt;Cactus&lt;/code&gt;呢&amp;hellip;&lt;/p&gt;
-
-&lt;h2 id=&#34;阅读更多-需要完善&#34;&gt;&amp;ldquo;阅读更多&amp;rdquo;需要完善&lt;/h2&gt;
-
-&lt;p&gt;在&lt;code&gt;Even&lt;/code&gt;中，想要在首页显示部分文章内容，需要手动在文章中添加一个标签:&lt;code&gt;&amp;lt;!-- more --&amp;gt;&lt;/code&gt;。 这样相当于强行手动将markdown内容割裂了，以后如果需要拷贝、迁移到其他地方的话可能有点不方便。 这方面的实现也应该参考一下&lt;code&gt;Cactus&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
   </channel>
