@@ -20,5 +20,14 @@
       <description>[toc] Synchronized 关键字是 Java 中进行并发控制的基础。通过 Synchronized 修饰一段代码块，从而将这段代码标记为临界区，以便控制其中代码互斥地执行。 Synchronized 关键字的用法很多，既可以</description>
     </item>
     
+    <item>
+      <title>Java的synchronized内部原理</title>
+      <link>https://violinsonata.site/2021/java%E7%9A%84synchronized%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86/</link>
+      <pubDate>Sun, 28 Feb 2021 09:51:46 +0800</pubDate>
+      
+      <guid>https://violinsonata.site/2021/java%E7%9A%84synchronized%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86/</guid>
+      <description>[toc] $\qquad$在 Java 提供 synchronized 的早期，JVM 会统一为所有用关键字修饰的代码块加上重量级的互斥锁。但是实际大部分情况并发抢占不是那么严重，用互斥</description>
+    </item>
+    
   </channel>
 </rss>

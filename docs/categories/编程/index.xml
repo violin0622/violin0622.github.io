@@ -21,12 +21,12 @@
     </item>
     
     <item>
-      <title>Java的Synchronized关键字</title>
-      <link>https://violinsonata.site/2021/synchronized-of-java/</link>
-      <pubDate>Fri, 08 Jan 2021 15:00:10 +0800</pubDate>
+      <title>Java的synchronized内部原理</title>
+      <link>https://violinsonata.site/2021/java%E7%9A%84synchronized%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86/</link>
+      <pubDate>Sun, 28 Feb 2021 09:51:46 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2021/synchronized-of-java/</guid>
-      <description>[toc] Synchronized 关键字是 Java 中进行并发控制的基础。通过 Synchronized 修饰一段代码块，从而将这段代码标记为临界区，以便控制其中代码互斥地执行。 Synchronized 关键字的用法很多，既可以</description>
+      <guid>https://violinsonata.site/2021/java%E7%9A%84synchronized%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86/</guid>
+      <description>[toc] $\qquad$在 Java 提供 synchronized 的早期，JVM 会统一为所有用关键字修饰的代码块加上重量级的互斥锁。但是实际大部分情况并发抢占不是那么严重，用互斥</description>
     </item>
     
     <item>
@@ -93,15 +93,6 @@ $virtualenv --version
 &lt;li&gt;在windows环境下,应该安装其对应的windows版本 : &lt;code&gt;virtualenvwrapper-win&lt;/code&gt;。该版本仅能在 cmd 下工作， 如果在windows上使用
 模拟Linux命令行的工具， 如 git bash , cmder 等， 则可能会造成无法正常工作。&lt;/li&gt;
 &lt;/ul&gt;</description>
-    </item>
-    
-    <item>
-      <title>Java的synchronized内部原理</title>
-      <link>https://violinsonata.site/1/java%E7%9A%84synchronized%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://violinsonata.site/1/java%E7%9A%84synchronized%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86/</guid>
-      <description>[toc] $\qquad$在 Java 提供 synchronized 的早期，JVM 会统一为所有用关键字修饰的代码块加上重量级的互斥锁。但是实际大部分情况并发抢占不是那么严重，用互斥</description>
     </item>
     
   </channel>

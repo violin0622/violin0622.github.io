@@ -311,304 +311,149 @@ awake: bar t2
     </item>
     
     <item>
-      <title>Java的Synchronized关键字</title>
-      <link>https://violinsonata.site/2021/synchronized-of-java/</link>
-      <pubDate>Fri, 08 Jan 2021 15:00:10 +0800</pubDate>
+      <title>Java的synchronized内部原理</title>
+      <link>https://violinsonata.site/2021/java%E7%9A%84synchronized%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86/</link>
+      <pubDate>Sun, 28 Feb 2021 09:51:46 +0800</pubDate>
       
-      <guid>https://violinsonata.site/2021/synchronized-of-java/</guid>
+      <guid>https://violinsonata.site/2021/java%E7%9A%84synchronized%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86/</guid>
       <description>
 
 &lt;p&gt;[toc]&lt;/p&gt;
 
-&lt;p&gt;Synchronized 关键字是 Java 中进行并发控制的基础。通过 Synchronized 修饰一段代码块，从而将这段代码标记为临界区，以便控制其中代码互斥地执行。&lt;/p&gt;
+&lt;p&gt;$\qquad$在 Java 提供 &lt;code&gt;synchronized&lt;/code&gt; 的早期，JVM 会统一为所有用关键字修饰的代码块加上重量级的互斥锁。但是实际大部分情况并发抢占不是那么严重，用互斥锁显得有些繁重从而拖慢了性能。 在 JDK 1.6 中，开发组对 &lt;code&gt;synchronized&lt;/code&gt; 进行了大幅度的优化，引入了诸多机制来提升同步代码块的性能。
+比较重要的机制有 &lt;code&gt;偏向锁&lt;/code&gt;、&lt;code&gt;轻量级锁&lt;/code&gt;、&lt;code&gt;自旋锁&lt;/code&gt;、&lt;code&gt;重量级锁&lt;/code&gt;四种锁，以及&lt;code&gt;锁消除&lt;/code&gt;、&lt;code&gt;锁粗化&lt;/code&gt;两种策略。&lt;/p&gt;
 
-&lt;p&gt;Synchronized 关键字的用法很多，既可以用来修饰一个函数，也可以单独修饰一段代码块；既可以在静态函数中使用，也可以在普通函数中使用。 但是无论怎么使用，其机制却都是一样的。理解 synchronized 作用的重点是要知道它需要指定一个对象作为锁，使用相同对象作为锁的所有 synchronized 代码，都会互斥地执行，使用不同对象的作为锁的 synchronized 代码，可以并发地执行。&lt;/p&gt;
+&lt;h2 id=&#34;关于-lock-record&#34;&gt;关于 Lock Record&lt;/h2&gt;
 
-&lt;h2 id=&#34;基本用法&#34;&gt;基本用法&lt;/h2&gt;
+&lt;p&gt;$\qquad$Lock Record 在 JVM 1.6 的锁优化中扮演了重要的角色，在偏向锁和轻量锁中都有用到。
+每当线程试图进入同步代码块时，都会初始化一个 Lock Record 对象（这个 Lock Record 是扫描线程栈找到一个空闲的 Lock Record 得到的，如果线程栈中没有空闲的则再创建一些），并且将其指针指向锁对象。
+每当线程离开同步代码块，便会将 Lock Record 释放掉。&lt;/p&gt;
 
-&lt;p&gt;Synchronized 最基本的用法是这样：
-![[basic-java-synchronized-usage]]&lt;/p&gt;
+&lt;p&gt;$\qquad$不过在偏向锁和轻量锁中，Lock Record 对象的作用并不完全相同：在偏向锁中，Lock Record 仅仅用做重入计数；而在轻量锁中，Lock Record 还要负责保存锁对象原本的 Mark Word。&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class SyncDemo{
-  private Object lock = new Object(); 
-  void foo(){
-    synchronized(lock){
-      System.out.println(&amp;quot;Hello world&amp;quot;);
-    }
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;关于-mark-word&#34;&gt;关于 Mark Word&lt;/h2&gt;
 
-&lt;p&gt;synchronized 通过括号指定一个对象作为锁，将内部的代码块锁定，不能被多个线程同时执行。&lt;/p&gt;
+&lt;p&gt;$\qquad$在 JVM 中，任何对象在内存中除了自身属性数据外，还有一个「对象头」。对象头中分两部分：&lt;code&gt;MarkWord&lt;/code&gt; 和 &lt;code&gt;KlassWord&lt;/code&gt; 。
+MarkWord 的格式非常复杂，在不同的情况下存储不同的数据，因此有不同的格式。与锁相关的信息都存储在对象的元信息，即对象的 &lt;code&gt;MarkWord&lt;/code&gt; 中。
+有些信息数据超过了 MarkWord 承载的范围，也会在 MarkWord 中存储指针，通过指针指向实际数据的位置。偏向锁需要存储的数据比较少，因此直接存储在 MarkWord 中。&lt;/p&gt;
 
-&lt;h2 id=&#34;synchronized-使用对象作为锁&#34;&gt;synchronized 使用对象作为锁&lt;/h2&gt;
+&lt;h2 id=&#34;偏向锁&#34;&gt;偏向锁&lt;/h2&gt;
 
-&lt;p&gt;要注意， synchronized 关键字后跟的括号内，必须是一个已经初始化的对象，相当于将这个对象当作是一个锁。 如果多个不同的代码块关联到同一个对象上， 那么这多个代码块共享一个锁，也就是多个代码块不能同时执行，同一时刻只能执行其中一段，直到这段代码退出，其他线程才能再次执行相同的代码块或其他使用相同对象锁定的代码块。&lt;br /&gt;
-看这个例子：&lt;/p&gt;
+&lt;h3 id=&#34;偏向锁的特点&#34;&gt;偏向锁的特点&lt;/h3&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;// 使用 java 11 编写。
-// 两个线程分别执行 foo bar，而这两个函数都
-// 用 synchronized 关键字关联到同一个 lock 对象。
-public class SyncDemo {
-  private static Object lock = new Object();
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;适用于单线程访问互斥代码段的场景。&lt;br /&gt;
+例如在单线程中使用 ConcurrentHashMap，对于 ConccurrentHashMap 中的同步代码块来说，其实一直都是同一个线程抢占锁、释放锁，因此没必要每次都使用重量级锁，乃至使用轻量级锁都是多余的。&lt;br /&gt;
+实际上在这种情况下，如果锁是可重入的，那即使抢占了锁的线程不再释放也是可以的，甚至可以避免多次获取、释放锁的开销从而提升性能。&lt;br /&gt;
+偏向锁就是基于这样的设计思想而实现的。因此可以说偏向锁是一种可重入锁。当多次抢占锁当是同一个线程时，使用偏向锁可以提升性能。&lt;/p&gt;&lt;/li&gt;
 
-  static void foo(){
-    System.out.println(&amp;quot;Foo started.&amp;quot;);
-    synchronized(lock){
-      System.out.println(&amp;quot;Foo in&amp;quot;);
-      try{
-        Thread.sleep(1000);
-      }catch(InterruptedException e){
-          e.printStackTrace();
-      }
-      System.out.println(&amp;quot;Foo out&amp;quot;);
-    }
-  }
+&lt;li&gt;&lt;p&gt;由于偏向锁假设每次执行同步代码块的都是同一个线程，从而没必要释放锁，因此当发现进入同步代码段的线程与当前持有偏向锁的线程不相同时，偏向锁不再适用，将膨胀为轻量锁。&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
 
-  static void bar() {
-    System.out.println(&amp;quot;Bar started.&amp;quot;);
-    synchronized(lock){
-      System.out.println(&amp;quot;Bar in&amp;quot;);
-      try{
-        Thread.sleep(1000);
-      }catch(InterruptedException e){
-          e.printStackTrace();
-      }
-      System.out.println(&amp;quot;Boo out&amp;quot;);
-    }
-  }
+&lt;h3 id=&#34;偏向锁的原理&#34;&gt;偏向锁的原理&lt;/h3&gt;
 
-  public static void main(String[] args){
-    var t1 = new Thread(SyncDemo::foo);
-    var t2 = new Thread(SyncDemo::bar);
-    t1.start();
-    t2.start();
+&lt;p&gt;对象初次创建时，如果没有特别指定，则 MarkWord 低三位为 0b101，例如在 64 位 JVM 上其初始值为 0x0000_0005，即匿名偏向状态。匿名偏向状态是指后三位为 0b101，且线程 ID 的部分为0。注意即使是匿名偏向状态，也会保存 GC 代数等信息，因此不全是 0 。&lt;/p&gt;
 
-    while(t1.isAlive() || t2.isAlive());
-  }
-}
+&lt;p&gt;当线程尝试获取偏向锁时，有四种可能：&lt;br /&gt;
+1. 第一次获取锁，锁对象尚未使用过，MarkWord 此时为匿名偏向。线程会构造一个 MarkWord（通过各种位运算），该 MarkWord 中保存了当前线程的 ID，然后通过 CAS 操作将自身构建的 MarkWord 替换掉锁对象的初始 MarkWord。如果此时 CAS 操作失败，说明有其他线程在此期间抢先修改了锁对象的 MarkWord，线程多于一个，偏向锁不再适用，需要把偏向锁撤销，并膨胀为轻量锁。&lt;/p&gt;
 
-&lt;/code&gt;&lt;/pre&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;再次获取锁，或者是重入获取锁，锁对象 MarkWord 内的线程 ID 与当前线程相同，则可以直接执行同步代码。&lt;/p&gt;&lt;/li&gt;
 
-&lt;p&gt;执行会产生如下结果:&lt;/p&gt;
+&lt;li&gt;&lt;p&gt;获取锁时发现锁对象 MarkWord 内 Epoch 已过期，相当于偏向锁已释放，则可以重新抢得锁使其偏向于自己。&lt;/p&gt;&lt;/li&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$java SyncDemo.java
-Foo started.
-Foo in
-Bar started.
-Foo out
-Bar in
-Boo out      
-&lt;/code&gt;&lt;/pre&gt;
+&lt;li&gt;&lt;p&gt;获取锁时锁对象 MarkWord 内的线程 ID 不是当前线程且锁 Epoch 未过期，则说明有其他线程持有偏向锁，当前有一个以上的线程抢占，偏向锁已不再适用，因此需要膨胀为轻量锁。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;p&gt;可见 Foo，Bar 在两个线程中近乎同时启动，Foo 抢到了锁，先执行同步代码块， 而 Bar 只能等 Foo 执行完了之后再执行。 可见虽然是不同的代码块，但因为 synchronized 关联到同一个对象作为锁，因此也只能串行执行。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;注意&lt;/code&gt; 在偏向锁中，获取锁的 CAS 操作并不会在 Lock Record 中保留锁对象原先的 MarkWord。
+因为偏向锁只是将自己的线程 ID 和 Epoch 存储在 MarkWord 中的前 25 位（ 64 位为 56 位），后面的分代年龄保留在原地，因此不必单独保存原先的 MarkWord。
+但是在计算过 HashCode 之后，哈希值占用了线程 ID 和 Epoch 的位置，之后再获取锁时必须要保留原 MarkWord，此时便不能再使用偏向锁了。&lt;/p&gt;
 
-&lt;h2 id=&#34;使用当前对象作为锁&#34;&gt;使用当前对象作为锁&lt;/h2&gt;
+&lt;h3 id=&#34;偏向锁的释放&#34;&gt;偏向锁的释放&lt;/h3&gt;
 
-&lt;p&gt;有时候，synchronized 关键字可以直接以对象自身作为锁：&lt;/p&gt;
+&lt;p&gt;$\qquad$偏向锁在释放时十分简单，只需要将本次进入同步代码块时初始化的 Lock Record 重置即可。
+由于进入代码块时找的 Lock Record 是最近的空闲代码块，因此释放锁时也是寻找线程栈中最近的一个指向锁对象的 Lock Record 将其重置。&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class SyncDemo{
-  void foo(){
-    synchronized(this) {
-      System.out.println(&amp;quot;Hello world&amp;quot;);
-    }
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;偏向锁的撤销&#34;&gt;偏向锁的撤销&lt;/h3&gt;
 
-&lt;p&gt;不用专门创建一个对象作为锁，看起来方便了很多。不过要注意的是，这样的方式声明的 foo 函数并不是全局同步的，而是每个 SyncDemo 对象各自同步。如果有两个 SyncDemo 分别在两个线程中调用 foo，那么不会发生互斥，而是会各自执行。
-比如下面的代码:&lt;/p&gt;
+&lt;p&gt;$\qquad$偏向锁的释放与撤销是两个不同的概念。释放操作仅在自身线程栈中，锁对象在其他线程看来依然属于其偏向的线程。
+但是在多线程环境中，一个线程事实上不能无限期的占用锁。因此需要引入偏向锁的撤销机制，将偏向锁还原为匿名偏向的状态。这样当持有锁的线程结束退出之后，其他线程可以再次获取锁使其偏向自己；或者当多个线程交替获取锁时，可以顺利升级为轻量锁。&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class SyncDemo{
-  void foo(){
-    synchronized(this){
-      System.out.println(&amp;quot;sleep: &amp;quot; + Thread.currentThread().getName());
-      try{
-        Thread.sleep(1000);
-      }catch(InterruptedException e){
-        e.printStackTrace();
-      }
-      System.out.println(&amp;quot;awake: &amp;quot; + Thread.currentThread().getName());
-    }
-  }
-  public static void main(String[] args){
-    var sd1 = new SyncDemo();
-    var sd2 = new SyncDemo();
-    var t1 = new Thread(sd1::foo, &amp;quot;t1&amp;quot;);
-    var t2 = new Thread(sd2::foo, &amp;quot;t2&amp;quot;);
-    t1.start();
-    t2.start();
+&lt;p&gt;$\qquad$在 CAS 操作获取锁失败时，说明有多于一个线程&lt;strong&gt;使用过&lt;/strong&gt;该锁。这时需要先把当前的偏向锁撤销。
+撤销偏向锁需要等待一个全局安全点，此时所有线程都已挂起，然后检查当前持有偏向锁的线程。此时有两种可能：
+1. 如果该线程已经退出了同步代码块，或者线程已经不存在了，则偏向锁可以安全撤销，变回无锁状态，然后再次偏向为当前线程。这个过程称为&lt;code&gt;重偏向(rebias)&lt;/code&gt;。&lt;/p&gt;
 
-    while(t1.isAlive() || t2.isAlive());
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;
+&lt;ol&gt;
+&lt;li&gt;如果该线程还在同步代码块内，则需要将锁膨胀为轻量锁。&lt;br /&gt;&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;p&gt;执行结果是这样：&lt;/p&gt;
+&lt;h3 id=&#34;偏向锁的膨胀&#34;&gt;偏向锁的膨胀&lt;/h3&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;sleep: t1
-sleep: t2
-awake: t1
-awake: t2
-&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;所谓「膨胀」只是个逻辑上的概念。实际在代码中，只不过是偏向锁获取失败时，撤销锁并使用轻量锁重新获取锁而已。&lt;/p&gt;
 
-&lt;p&gt;两个线程 t1 t2 是同时陷入休眠，同时苏醒，说明两个线程的 foo 是并发执行的。&lt;/p&gt;
+&lt;h3 id=&#34;批量重偏向与-epoch&#34;&gt;批量重偏向与 Epoch&lt;/h3&gt;
 
-&lt;h2 id=&#34;使用类对象作为锁&#34;&gt;使用类对象作为锁&lt;/h2&gt;
+&lt;h2 id=&#34;轻量锁&#34;&gt;轻量锁&lt;/h2&gt;
 
-&lt;p&gt;如果想要全局同步的话，可以这样写:&lt;/p&gt;
+&lt;h3 id=&#34;轻量锁的适用场景&#34;&gt;轻量锁的适用场景&lt;/h3&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class SyncDemo{
-  void foo(){
-    synchronized(SyncDemo.class) {
-      System.out.println(&amp;quot;Hello world&amp;quot;);
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;适用于多个线程&lt;strong&gt;无抢占&lt;/strong&gt;地先后执行互斥代码段的场景。即上一个线程释放锁一段时间之后，下一个线程才开始获取锁。在并发量较低时使用轻量锁可以提升性能。&lt;/li&gt;
+&lt;li&gt;当发现上一个线程还未释放锁，下一个线程已经开始获取锁，说明此时发生了抢占，将膨胀为重量锁。
+但还有一个问题是， MarkWord 中原本就存储了对象的元信息，例如对象的哈希值，对象的 GC 存活次数等，如果在 MarkWord 中存储了偏向锁信息，那么原先的信息被挤到哪里去了？答案是那些信息在栈中创建单独的对象来保存，也就是 Lock Record。Lock Record 中会保留两部分信息，一部分是被转移过来的对象的 MarkWord，另一部分是指向该对象的指针。&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
 
-&lt;p&gt;JVM 在加载 SyncDemo 类的时候，会为这个类创建一个 java.lang.Class 的对象，我们假设该对象名为 SyncDemoClassObject（实际上不是）。SyncDemoClassObject 可以通过 SyncDemo 类型的 &lt;code&gt;.class&lt;/code&gt; 属性，或者将 SyncDemo 类实例化之后通过实例对象的 &lt;code&gt;.getClass()&lt;/code&gt;方法访问。这样以来， &lt;code&gt;synchronized(SyncDemo.class)&lt;/code&gt; 实际上是以 SyncDemoClassObject 作为锁。 SyncDemoClassObject 是全局唯一的， 从而以此为锁的 foo() 方法也可以做到全局互斥。&lt;/p&gt;
+&lt;h3 id=&#34;轻量锁的原理&#34;&gt;轻量锁的原理&lt;/h3&gt;
 
-&lt;h2 id=&#34;直接作为函数修饰符&#34;&gt;直接作为函数修饰符&lt;/h2&gt;
+&lt;p&gt;即使线程通过偏向锁的方式获取锁失败时，依然有可能锁是为锁定状态：偏向锁已撤销，或者锁对象已经计算了哈希值，不再支持偏向锁。
+如果在启动 JVM 时禁用了偏向锁，那么线程会直接以轻量锁的方式获取锁。&lt;br /&gt;
+1. 当第一次获取锁时，锁对象的 MarkWord 为 后三位为 0b001，因此会构建一个未锁定状态的 MarkWord (后三位值为 0b001) 保存于线程栈最近的一个 Lock Record 中。然后试图通过 CAS 操作将锁对象的 MarkWord 和 LockRecord 的地址交换，如果交换成功，那么 Lock Record 中会保存锁对象的 MarkWord，而锁对象的 MarkWord 中保存的是 LockRecord 的地址，相当于锁对象的 MarkWord 变成了指向 Lock Record 的指针。&lt;br /&gt;
+2. 当第 N 次获取锁时，有可能是其他线程在竞争锁，或者同一个线程以重入的方式获取锁。 无论哪种方式，CAS 一定会失败，因为此时锁对象的 MarkWord 后三位不再是 0b001 ，而是指向某个线程栈中的 Lock Record 的指针(0b000)。此时便需要判断是否为同一个线程，如果是则说明是重入，否则说明发生了多线程竞争锁，需要膨胀为重量锁。&lt;br /&gt;
+当同一个线程重入时，会在线程栈中创建一个新的 Lock Record ，但不用再 CAS 保存 MarkWord 了——此时 MarkWord 中保存的是同线程中另一个 Lock Record 的地址。
+由于内存对齐的缘故，Lock Record 的地址一定是 4 的倍数，即二进制后两位一定是 00 。此时便可以判断 MarkWord 的后两位判断是否为指向了一个 Lock Record，即是否为轻量锁状态。&lt;/p&gt;
 
-&lt;p&gt;有时候，如果整个函数都需要互斥执行，那么可以这样写:&lt;/p&gt;
+&lt;h3 id=&#34;轻量锁的膨胀&#34;&gt;轻量锁的膨胀&lt;/h3&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class SyncDemo{
-  synchronized void foo(){
-    System.out.println(&amp;quot;Hello world&amp;quot;);
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;当发现多个线程竞争同一个锁时，有三种可能：
+- 锁还没有分配，此时按轻量锁逻辑重新获得锁。如果失败了就需要膨胀。
+- 同一个线程重入获得锁，此时创建 Lock Record 计数，并继续执行同步代码。不需要膨胀。
+- 不同的线程同时竞争，如果等不到其他线程释放锁，那么便需要膨胀为重量锁。&lt;/p&gt;
 
-&lt;p&gt;这实际上算是一种语法糖，此时该函数会以对象本身作为锁。也就是和下面的代码等价:&lt;/p&gt;
+&lt;h2 id=&#34;重量锁&#34;&gt;重量锁&lt;/h2&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class SyncDemo{
-  void foo(){
-    synchronized(this) {
-      System.out.println(&amp;quot;Hello world&amp;quot;);
-    }
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;重量锁就是传统的互斥锁。偏向锁不需要额外的对象，轻量锁需要 Lock Record 以保存锁对象的 MarkWord，而重量级锁需要更复杂的机制——JVM 中称之为 ObjectMonitor。&lt;br /&gt;
+ObjectMonitor 是一个基于 MESA 模型实现的一种管程。管程的特点是可以通过若干个条件变量实现等待。不过 synchronized 做了简化，只有一个条件变量，也就只有一个等待队列。&lt;/p&gt;
 
-&lt;h2 id=&#34;与-static-关键字配合使用&#34;&gt;与 static 关键字配合使用&lt;/h2&gt;
+&lt;h3 id=&#34;重量锁的原理&#34;&gt;重量锁的原理&lt;/h3&gt;
 
-&lt;p&gt;synchronized 与 static 关键字可以配合使用，并且其机制依然不变：一定需要关联一个实例对象作为锁。
-当 synchronized 修饰静态函数时，由于类尚未实例化，this指针没有指向具体对象，因此不会使用 this 作为锁，而是转而使用 SyncDemoClassObject 作为锁。此时全局的 foo 函数都互斥执行。&lt;/p&gt;
+&lt;p&gt;重量锁与轻量锁相比，是个十足的“大家伙”。其内部有多个队列用于存储不同状态的线程。&lt;br /&gt;
+另外，Java 中的 &lt;code&gt;wait()&lt;/code&gt;, &lt;code&gt;notify()&lt;/code&gt;, &lt;code&gt;notifyAll()&lt;/code&gt; 三个方法也是重量锁提供的机制。换句话说，如果线程要使用这三个方法，那么必须要膨胀为重量锁。
+重量锁中有这样几个集合，线程经过封装后以 WaiterObject 的形式在几个集合中流转：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class SyncDemo{
-  static synchronized void foo(){
-    System.out.println(&amp;quot;Hello world&amp;quot;);
-  }
-  // foo bar 两种方式是等价的
-  static void bar(){
-    synchronized(SyncDemo.class){
-      System.out.println(&amp;quot;Hello world&amp;quot;);
-    }
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;cxq&lt;/strong&gt;: 只能用 CAS 操作更改头指针的方式修改的单链表结构。
+用于存储试图获取锁，但是获取失败的线程。这些线程会使用 &lt;code&gt;pthread_cond_wait&lt;/code&gt; 系统调用将自身挂起。
+每次有新的线程试图获取锁失败时，会用头插法加入该链表；因此线程会遵循&lt;code&gt;后入先出&lt;/code&gt;的原则。&lt;/p&gt;&lt;/li&gt;
 
-&lt;h2 id=&#34;不要将-synchronized-绑定在基础类型上&#34;&gt;不要将 synchronized 绑定在基础类型上&lt;/h2&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;EntryList&lt;/strong&gt;: cxq 队列中有资格成为候选资源的线程会被移动到该队列中。&lt;/p&gt;&lt;/li&gt;
 
-&lt;p&gt;鉴于 JVM 对于基础类型的实现方式，不同基础类型的对象如果其值相同，那么很有可能指向相同的内存对象。因此看起来互不相关的两段同步代码，可能会使用同一个对象而互斥执行，进而影响其性能。
-例如下面的代码：&lt;/p&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;WaitSet&lt;/strong&gt;: 当线程主动调用 &lt;code&gt;Object::wait()&lt;/code&gt;时，会进入该集合，挂起并释放掉锁。 这个集合就对应着管程模型中的等待队列。
+当有线程调用 &lt;code&gt;notify()&lt;/code&gt;或&lt;code&gt;notifyAll()&lt;/code&gt;时，会从该集合中将线程移动到 cxq 或 EntryList 中等待下一次获得锁并继续执行。&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;import static com.pivovarit.function.ThrowingRunnable.unchecked;
+&lt;p&gt;此外，ObjectMonitor 还有 owner 属性用于表示当前持有锁的线程， recursive 计数器用于保存同一线程的重入次数等。&lt;/p&gt;
 
-public class SyncDemo {
-  Integer i1 = Integer.valueOf(1);
-  Integer i2 = Integer.valueOf(1);
-  void foo() throws InterruptedException{
-    synchronized(i1) {
-      System.out.println(&amp;quot;sleep: &amp;quot; + Thread.currentThread().getName());
-      Thread.sleep(1000);
-      System.out.println(&amp;quot;awake: &amp;quot; + Thread.currentThread().getName());
-    }
-  }
-  void bar() throws InterruptedException{
-    synchronized(i2){
-    System.out.println(&amp;quot;sleep: &amp;quot; + Thread.currentThread().getName());
-    Thread.sleep(1000);
-    System.out.println(&amp;quot;awake: &amp;quot; + Thread.currentThread().getName());
-    }
-  }
+&lt;h3 id=&#34;获取重量锁&#34;&gt;获取重量锁&lt;/h3&gt;
 
-  public static void main(String[] args){
-    var sd1 = new SyncDemo();
-    var sd2 = new SyncDemo();
-    var t1 = new Thread(unchecked(sd1::foo), &amp;quot;t1&amp;quot;);
-    var t2 = new Thread(unchecked(sd2::foo), &amp;quot;t2&amp;quot;);
-    t1.start();
-    t2.start();
+&lt;ol&gt;
+&lt;li&gt;如果当前是无锁状态、锁重入、当前线程是之前持有轻量级锁的线程则只需更新一下 owner 和 重入计数即可继续执行同步代码。&lt;/li&gt;
+&lt;li&gt;如果已经有其他线程持有了锁，便先自旋尝试等待锁释放，这样做的目的是为了减少执行操作系统同步操作带来的开销。&lt;/li&gt;
+&lt;li&gt;如果还是没有获取到锁，就将自己作为头节点插入到 cxq 中，然后调用 &lt;code&gt;pthread_cond_wait&lt;/code&gt; 将自己挂起。直到被其他线程释放锁时唤醒后再次尝试获取锁。&lt;/li&gt;
+&lt;li&gt;如果线程在获取到锁之后调用了 &lt;code&gt;wait()&lt;/code&gt; 主动休眠，就会释放掉锁，然后该线程会进入 WaitSet 等待唤醒。进入 WaitSet 的线程也会调用 &lt;code&gt;pthread_cond_wait&lt;/code&gt; 将自己挂起。与 cxq 中的挂起不同的是，这些线程只有当其他线程调用 &lt;code&gt;notify()&lt;/code&gt;,&lt;code&gt;notifyAll()&lt;/code&gt; 时才会被唤醒。&lt;/li&gt;
+&lt;li&gt;如果线程调用了 &lt;code&gt;notify()&lt;/code&gt;，&lt;code&gt;notifyAll()&lt;/code&gt; 方法，那么会从 WaitSet 中选取一个线程，放入 cxq 或 EntryList 中，使其可以参与后续的锁竞争。&lt;/li&gt;
+&lt;/ol&gt;
 
-    while(t1.isAlive() || t2.isAlive());
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;执行后的结果是：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$java -cp ./throwing-function-1.5.1.jar SyncDemo.java
-sleep: t1
-awake: t1
-sleep: t2
-awake: t2
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;可以看到两个线程实际是串行执行的。 这是因为 i1 和 i2 因为其值相同， 而指向了相同的对象。有这种情况的还有其他基本类型的封装类型，以及String类型。&lt;/p&gt;
-
-&lt;h2 id=&#34;synchronized-是可重入锁&#34;&gt;synchronized 是可重入锁&lt;/h2&gt;
-
-&lt;p&gt;可重入锁的含义是当一个线程内的调用链上有多个函数尝试获取同一把锁时， 可以不用再次抢占。最典型的应用场景是在递归函数中，如果不用重入锁，当父函数获取了锁并调用子函数，子函数再次尝试获取锁，于是造成死锁。 而 Java 的 synchronized 关键字修饰的代码块使用重入锁，从而避免了死锁。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;import static com.pivovarit.function.ThrowingRunnable.unchecked;
-
-public class SyncDemo {
-  void foo() throws InterruptedException{
-    var name = Thread.currentThread().getName();
-    synchronized(SyncDemo.class) {
-      System.out.println(&amp;quot;sleep: foo &amp;quot; + name); 
-      Thread.sleep(1000);
-      bar();
-      System.out.println(&amp;quot;awake: foo &amp;quot; + name);
-    }
-  }
-
-  void bar() throws InterruptedException{
-    var name = Thread.currentThread().getName();
-    synchronized(SyncDemo.class){
-      System.out.println(&amp;quot;sleep: bar &amp;quot; + name);
-      Thread.sleep(1000);
-      System.out.println(&amp;quot;awake: bar &amp;quot; + name);
-    }
-  }
-
-  public static void main(String[] args){
-    var sd1 = new SyncDemo();
-    var sd2 = new SyncDemo();
-    var t1 = new Thread(unchecked(sd1::foo), &amp;quot;t1&amp;quot;);
-    var t2 = new Thread(unchecked(sd2::bar), &amp;quot;t2&amp;quot;);
-    t1.start();
-    t2.start();
-
-    unchecked(t1::join);
-    unchecked(t2::join);
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;执行结果如下:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$java -cp ./throwing-function-1.5.1.jar SyncDemo.java
-sleep: foo t1
-sleep: bar t1
-awake: bar t1
-awake: foo t1
-sleep: bar t2
-awake: bar t2
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;可以看出 t1 内的 foo 函数先抢占了锁，然后调用 bar ，由于在同一个线程内， bar 可以直接执行，此时相当于 t1 内的 foo 和 bar 都持有该锁。不过由于两个函数在同一个线程内，线程内的代码串行执行，因此不会出现「竞态条件」。 当 t1 的 bar 执行完成后返回， t1 内的 foo 继续执行到结束退出。 直到此时 t1 才释放了锁，从而 t2 开始执行 bar。&lt;/p&gt;
+&lt;p&gt;当获取到锁之后需要将当前线程从 cxq 或 EntryList 移除。&lt;/p&gt;
 </description>
     </item>
     

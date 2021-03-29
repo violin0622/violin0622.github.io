@@ -1,8 +1,8 @@
 ---
 title: "Java的synchronized内部原理"
-date: 2021-02-29T09:51:46+08:00
+date: 2021-02-28T09:51:46+08:00
 tags: [并发编程, Java]
-categories: [编程]
+categories: [编程, Java]
 
 ---
 [toc]
