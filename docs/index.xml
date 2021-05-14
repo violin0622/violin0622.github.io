@@ -5,8 +5,206 @@
     <description>Recent content in Sonata for solo Violin on Sonata for solo Violin</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 01 Mar 2021 09:55:21 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 14 May 2021 17:14:19 +0800</lastBuildDate>
     <atom:link href="/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>JVM的JMX机制</title>
+      <link>https://violinsonata.site/2021/jvm%E7%9A%84jmx%E6%9C%BA%E5%88%B6/</link>
+      <pubDate>Fri, 14 May 2021 17:14:19 +0800</pubDate>
+      
+      <guid>https://violinsonata.site/2021/jvm%E7%9A%84jmx%E6%9C%BA%E5%88%B6/</guid>
+      <description>
+
+&lt;p&gt;[toc]&lt;/p&gt;
+
+&lt;h1 id=&#34;什么是-jmx&#34;&gt;什么是 JMX&lt;/h1&gt;
+
+&lt;p&gt;JMX 全称是 The Java Management Extensions ，是一种继承到 JVM 中的标准化功能。&lt;/p&gt;
+
+&lt;p&gt;JMX 的作用是在 JVM 运行过程中，实现对进程内变量的访问与控制。
+这个「进程内变量」，既可以是 JVM 的运行参数，也可以是用户程序自定义的变量。&lt;/p&gt;
+
+&lt;p&gt;由于 JMX 的灵活性， 因此该技术经常被用于在运行时修改 JVM 运行参数、不停机修改应用的配置、监控指标导出等功能。&lt;/p&gt;
+
+&lt;p&gt;更方便的是， JMX 支持一些远程访问协议，典型的如 RMI 与 HTTP 协议。
+因此不必登陆到 JVM 进程所在的服务器，即可实现对进程的访问。&lt;/p&gt;
+
+&lt;p&gt;JMX 整体的架构如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-ascii&#34;&gt;                  ┌─────────┐  ┌─────────┐                  
+                  │jconsole │  │   Web   │              
+                  └─────────┘  └─────────┘              
+              	      rmi          http              
+                       │            │              
+              ┌────────│────────────│────────┐              
+              │JVM     ▼            ▼        │              
+              │   ┌─────────┐  ┌─────────┐   │              
+              │ ┌─┤Connector├──┤ Adaptor ├─┐ │              
+              │ │ └─────────┘  └─────────┘ │ │              
+              │ │       MBeanServer        │ │              
+              │ │ ┌──────┐┌──────┐┌──────┐ │ │              
+              │ │ │MBean1││MBean2││MBean3│ │ │              
+              │ │ └──────┘└──────┘└──────┘ │ │                 
+              │ └──────────────────────────┘ │   
+              └──────────────────────────────┘              
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;JMX 的主体是与 JVM 嵌合在一起的 MBeanServer， 对于需要管理访问的数据，通过 MBean 的方式注册到 MBeanServer 中。
+另外，MBeanServer 通过各种接口供外部访问。&lt;/p&gt;
+
+&lt;h1 id=&#34;使用-jmx&#34;&gt;使用 JMX&lt;/h1&gt;
+
+&lt;p&gt;如果想要通过 JMX 技术在进程外部对进程数据进行访问，那么必须要将该数据封装在 MBean 中，并将 MBean 注册给 MBeanServer 。&lt;/p&gt;
+
+&lt;p&gt;MBean 是一种遵循 JMX 要求而设计的类和对象 ，不过本质上和普通的对象并没有什么区别。
+当通过 JMX 访问一个 MBean 时， MBean 将暴露三类信息：
+1. 一些属性
+2. 一些方法
+3. 自述信息&lt;/p&gt;
+
+&lt;h2 id=&#34;定义-mbean-接口&#34;&gt;定义 MBean 接口&lt;/h2&gt;
+
+&lt;p&gt;要注意， MBean 的接口名称必须要以 &lt;code&gt;MBean&lt;/code&gt; 结尾。&lt;br /&gt;
+在 MBean 接口 中，需要读写的属性将以 getter/setter 的方式定义。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;package com.example; 
+ 
+public interface HelloMBean { 
+ 
+    public void sayHello(); 
+    public int add(int x, int y); 
+    
+    public String getName(); 
+     
+    public int getCacheSize(); 
+    public void setCacheSize(int size); 
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;实现-mbean-接口&#34;&gt;实现 MBean 接口&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;package com.example; 
+ 
+public class Hello implements HelloMBean { 
+    public void sayHello() { 
+        System.out.println(&amp;quot;hello, world&amp;quot;); 
+    } 
+     
+    public int add(int x, int y) { 
+        return x + y; 
+    } 
+     
+    public String getName() { 
+        return this.name; 
+    }  
+     
+    public int getCacheSize() { 
+        return this.cacheSize; 
+    } 
+     
+    public synchronized void setCacheSize(int size) {
+        this.cacheSize = size; 
+        System.out.println(&amp;quot;Cache size now &amp;quot; + this.cacheSize); 
+    } 
+     
+    private final String name = &amp;quot;Reginald&amp;quot;; 
+    private int cacheSize = DEFAULT_CACHE_SIZE; 
+    private static final int DEFAULT_CACHE_SIZE = 200; 
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;注册-mbean-对象&#34;&gt;注册 MBean 对象&lt;/h2&gt;
+
+&lt;p&gt;在注册 MBean 到 MBeanServer 时， 需要为每个 MBean 对象指定一个名称。&lt;br /&gt;
+名称必须是 &lt;code&gt;javax.management.ObjectName&lt;/code&gt; 类型，并且名称必须按照 ObjectName 类规定的格式。&lt;/p&gt;
+
+&lt;p&gt;简单来说，ObjectName 规定的 MBean 的名称分成两部分， 中间由冒号分割:
+- 一个域名
+- 一组键值对&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;package com.example; 
+import java.lang.management.*; 
+import javax.management.*; 
+ 
+public class Main { 
+    public static void main(String[] args)  throws Exception { 
+     
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer(); 
+        ObjectName name = new ObjectName(&amp;quot;com.example:type=Hello&amp;quot;); 
+        Hello mbean = new Hello(); 
+        mbs.registerMBean(mbean, name); 
+          
+     
+        System.out.println(&amp;quot;Waiting forever...&amp;quot;); 
+        Thread.sleep(Long.MAX_VALUE); 
+    } 
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;启用-jmx&#34;&gt;启用 JMX&lt;/h1&gt;
+
+&lt;p&gt;在启动 JVM 进程时，添加如下参数以启用 JMX :&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;java \
+  -Dcom.sun.management.jmxremote \  
+  -Dcom.sun.management.jmxremote.port=9999
+  -Dcom.sun.management.jmxremote.authenticate=false \  
+  -Dcom.sun.management.jmxremote.ssl=false \  
+  -jar App.jar
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这样便让 JVM 进程监听了 9999 端口作为 JMX 的入口。&lt;/p&gt;
+
+&lt;p&gt;上面的例子没有开启 TLS 验证与通信加密，如果需要开启的话，只需修改对应的
+&lt;code&gt;com.sun.management.jmxremote.authenticate&lt;/code&gt;和&lt;code&gt;com.sun.management.jmxremote.ssl&lt;/code&gt;参数即可。&lt;/p&gt;
+
+&lt;p&gt;启动进程之后会发现， JVM 除了监听指定的 JMX 端口之外，还额外监听了两个随机端口。 这两个端口一个是供 RMI 使用的， 一个是供 Jconsole 等监控工具访问本地 JVM 进程时使用的。&lt;/p&gt;
+
+&lt;p&gt;对于部分应用环境中， 通过防火墙限制了端口访问的范围， 那么还需要额外添加两个参数，以使 RMI 通信的端口复用 JMX 端口：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;java \
+  -Dcom.sun.management.jmxremote \  
+  -Dcom.sun.management.jmxremote.port=9999
+  -Dcom.sun.management.jmxremote.authenticate=false \  
+  -Dcom.sun.management.jmxremote.ssl=false \  
+  -Dcom.sun.management.jmxremote.rmi.port=9999
+  -Djava.rmi.server.hostname=$(ip route get 8.8.8.8 | awk &#39;{print $NF; exit}&#39;) \  
+  -jar App.jar
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果想要关闭最后一个监听的随机端口， 那么只需在启动参数中加上这一项:
+&lt;code&gt;-XX:+DisableAttachMechanism&lt;/code&gt;&lt;/p&gt;
+
+&lt;h1 id=&#34;访问-jmx&#34;&gt;访问 JMX&lt;/h1&gt;
+
+&lt;p&gt;在 JDK 中自带了一个 GUI 工具用以通过 JMX 访问进程， 也就是上面提到的 &lt;code&gt;Jconsole&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;不过这是一个 GUI 工具，在 CLI 环境中无法使用。 如果想要在命令行中访问 JMX 的话， 那么 &lt;a href=&#34;https://docs.cyclopsgroup.org/jmxterm&#34;&gt;Jmxterm&lt;/a&gt; 是一个不错的选择。&lt;/p&gt;
+
+&lt;h2 id=&#34;jmx-与监控&#34;&gt;JMX 与监控&lt;/h2&gt;
+
+&lt;p&gt;JMX 需要通过 RMI 协议去访问， 如果想要通过 JMX 暴露一些监控指标到 Prometheus 的话， 那么还需要搭配 &lt;a href=&#34;https://github.com/prometheus/jmx_exporter&#34;&gt;JMX Exporter&lt;/a&gt;，在启动 JVM 时添加 java agent，并指定 HTTP 端口和指标转换配置文件。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;java \
+  -javaagent:./jmx_prometheus_javaagent-0.15.0.jar=8080:config.yaml \
+  -jar App.jar
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;jmx-性能调优&#34;&gt;JMX 性能调优&lt;/h2&gt;
+
+&lt;p&gt;有一个强大的 JVM 分析工具， &lt;a href=&#34;https://visualvm.github.io/&#34;&gt;VisualVM&lt;/a&gt;， 可用通过 JMX 方式查看进程的运行状态， 堪称性能调优利器 ！&lt;/p&gt;
+
+&lt;h1 id=&#34;参考&#34;&gt;参考&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;官方对于 JMX 技术的介绍:
+&lt;a href=&#34;https://docs.oracle.com/javase/tutorial/jmx/overview/index.html&#34;&gt; Overview of the JMX Technology &lt;/a&gt;&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;StackOverflow 上关于 JMX 端口的讨论:
+&lt;a href=&#34;https://stackoverflow.com/questions/20884353/why-java-opens-3-ports-when-jmx-is-configured/21552812#21552812&#34;&gt;Why Java opens 3 ports when JMX is configured? &lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>Java的Synchronized关键字</title>
@@ -2340,129 +2538,6 @@ metadata:
 &lt;p&gt;许多任务并不是天然并行和独立的。在这种情况下我认为相比于并行模型，流水线模型可能更合适。&lt;/p&gt;
 
 &lt;p&gt;你不需要从底层实现流水线模型，许多现代的平台比如&lt;code&gt;Vert.x&lt;/code&gt;已经帮你做了很多。&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>通过channel模拟信号</title>
-      <link>https://violinsonata.site/2019/broadcast-signals-using-channel/</link>
-      <pubDate>Tue, 29 Jan 2019 12:52:36 +0800</pubDate>
-      
-      <guid>https://violinsonata.site/2019/broadcast-signals-using-channel/</guid>
-      <description>&lt;p&gt;众所周知，在Golang中创建多个goroutine后，可以使用&lt;code&gt;sync.WaitGroup&lt;/code&gt;来等待多个协程全部完成。&lt;br /&gt;
-那么是否有一种方法，不使用这个组件也能完成相同的功能呢？&lt;br /&gt;
-有，那就是使用无缓存的&lt;code&gt;channel&lt;/code&gt;。&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;channel&lt;/code&gt;有一个特点就是，当关闭之后，不能再向内写入数据，否则会造成panic,但是依然可以从中读出数据，此时读出的数据是&lt;code&gt;channel&lt;/code&gt;类型的默认值。比如&lt;code&gt;chan int&lt;/code&gt;读出的就是0， &lt;code&gt;chan bool&lt;/code&gt; 读出的就是false。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func main(){
-    chInt := make(chan int)
-    chBool := make(chan bool)
-    close(chInt)
-    close(chBool)
-    fmt.Println(&amp;lt;-chInt, &amp;lt;-chBool)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;运行结果
-&amp;gt; 0 false&lt;/p&gt;
-
-&lt;!-- more --&gt;
-
-&lt;p&gt;注意，如果声明的是有缓存的channel，那么关闭之后会首先读出缓存里面的数据，然后才是该类型的默认值&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func main(){
-    chInt := make(chan int, 5)
-    chInt &amp;lt;- 1
-    chInt &amp;lt;- 2
-    close(chInt)
-    fmt.Println(&amp;lt;-chInt, &amp;lt;-chInt, &amp;lt;-chInt)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;运行结果:
-&amp;gt; 1 2 0&lt;/p&gt;
-
-&lt;p&gt;既然如此，那么我们可以想到使用无缓存的&lt;code&gt;channel&lt;/code&gt;来同步地控制多个协程共同启动：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func main(){
-    start := make(chan int)
-    
-    for i:=0; i&amp;lt;10; i++{
-        go func(){
-            &amp;lt;-start:
-                fmt.Println(&amp;quot;do something concurrently !&amp;quot;)
-        }()
-    }
-    
-    close(start)
-    time.Sleep(time.Second)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;运行结果，多个协程是共同启动的:
-&amp;gt; do something concurrently !&lt;br /&gt;
-do something concurrently !&lt;br /&gt;
-do something concurrently !&lt;br /&gt;
-do something concurrently !&lt;br /&gt;
-do something concurrently !&lt;br /&gt;
-do something concurrently !&lt;br /&gt;
-do something concurrently !&lt;br /&gt;
-do something concurrently !&lt;br /&gt;
-do something concurrently !&lt;br /&gt;
-do something concurrently !&lt;br /&gt;
-&amp;gt;&lt;/p&gt;
-
-&lt;p&gt;当然，并不只是启动信号，也可以利用这个特性发送任何你想要广播的信号，比如休眠，退出，等等。&lt;br /&gt;
-另外，这个channel也可以用来作数据传输。那么如何区分读出来的是数据还是关闭信号呢？ 答案是在读出的时候判断一下第二个返回值。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func main(){
-   ch := make(chan int)
-    for i:=0; i&amp;lt;10; i++{
-        go func(){
-            for{
-                select{
-                case n, ok:=&amp;lt;-ch:
-                    if ok{
-                        fmt.Println(&amp;quot;data&amp;quot;, n)
-                    }else{
-                        fmt.Println(&amp;quot;signal&amp;quot;,n)
-                        return
-                    }
-                }
-            }
-        }()
-    }
-    
-    ch&amp;lt;-0
-    ch&amp;lt;-1
-    ch&amp;lt;-2
-    time.Sleep(time.Second)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;运行结果，打印顺序是乱序的，但可以看到协程能够区分“信号”和“数据” 的区别：
-&amp;gt; data 0&lt;br /&gt;
-signal 0&lt;br /&gt;
-signal 0&lt;br /&gt;
-signal 0&lt;br /&gt;
-signal 0&lt;br /&gt;
-signal 0&lt;br /&gt;
-data 1&lt;br /&gt;
-signal 0&lt;br /&gt;
-signal 0&lt;br /&gt;
-data 2&lt;br /&gt;
-signal 0&lt;br /&gt;
-signal 0&lt;br /&gt;
-signal 0&lt;br /&gt;
-&amp;gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;br/&gt;&lt;/p&gt;
-
-&lt;p&gt;当然，这个特性也并不是万能的，主要的缺陷在于，
-- 只能发送一个特定的信号。如果想要发送多个信号，需要使用多个&lt;code&gt;channel&lt;/code&gt;。
-- 只能以类似广播的方式发送信号，一次close，所有监听的goroutine都会响应。&lt;br /&gt;
-  例如，你创建了十个阻塞的goroutine,而只想启动其中的三个（无论是特定的三个还是任意三个），这是无法实现的。&lt;/p&gt;
 </description>
     </item>
     
